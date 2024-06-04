@@ -1,0 +1,6 @@
+go 1.22
+
+use (
+	./packages/shared-go
+	./packages/shared-schema
+)

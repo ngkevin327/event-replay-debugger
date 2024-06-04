@@ -1,0 +1,58 @@
+# Binaries
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.out
+coverage.out
+vendor/
+
+# Node
+node_modules/
+.pnpm-store/
+apps/web/dist/
+*.tsbuildinfo
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Env and secrets
+.env
+.env.local
+*.pem
+secrets/
+
+# Docker / local data
+infra/docker-compose/data/
+*.log
+
+# OS
+Thumbs.db
+
+# Planning and non-repo artifacts (kept outside git history)
+/1.txt
+/2.txt
+/docs/01-product-vision.md
+/docs/02-prd.md
+/docs/03-technical-architecture.md
+/docs/04-diagrams.md
+/docs/05-mvp-implementation-plan.md
+/scripts/build/
+/scripts/merge-mvp-plan.mjs
+/scripts/gen-stages-*.mjs
+/scripts/commits-*.mjs
