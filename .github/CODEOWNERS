@@ -1,0 +1,12 @@
+* @replay/platform
+
+/apps/api-gateway/ @replay/backend
+/apps/ingestion/ @replay/backend
+/apps/reconstruction/ @replay/backend
+/apps/replay-orchestrator/ @replay/backend
+/apps/web/ @replay/frontend
+/packages/ @replay/backend
+/services/ @replay/backend
+/infra/ @replay/platform
+/api/ @replay/backend
+/deploy/ @replay/platform
