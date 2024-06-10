@@ -1,0 +1,17 @@
+{
+  "event_id": "550e8400-e29b-41d4-a716-446655440000",
+  "project_id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+  "captured_at": "2026-05-19T12:00:00.000Z",
+  "source": "consumer",
+  "topic": "payments.settle",
+  "partition": 3,
+  "offset": 128901,
+  "timestamp": "2026-05-19T11:59:58.123Z",
+  "key": "cGF5bWVudC0x",
+  "payload": "eyJhbW91bnQiOjEwMH0=",
+  "payload_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998b86e6f0691c3d",
+  "headers": { "correlation_id": "abc-123" },
+  "consumer_group": "settlement-workers",
+  "retry_generation": 0,
+  "outcome": "success"
+}

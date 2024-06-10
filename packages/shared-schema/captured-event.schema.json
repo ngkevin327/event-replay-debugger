@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://replay.dev/schemas/captured-event/v1",
+  "title": "CapturedEvent",
+  "type": "object",
+  "required": [
+    "event_id",
+    "project_id",
+    "captured_at",
+    "source",
+    "topic",
+    "partition",
+    "offset",
+    "timestamp"
+  ],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "project_id": { "type": "string", "format": "uuid" },
+    "captured_at": { "type": "string", "format": "date-time" },
+    "source": { "type": "string", "enum": ["consumer", "producer"] },
+    "topic": { "type": "string", "minLength": 1 },
+    "partition": { "type": "integer", "minimum": 0 },
+    "offset": { "type": "integer", "minimum": 0 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "key": { "type": "string", "contentEncoding": "base64" },
+    "payload": { "type": "string", "contentEncoding": "base64" },
+    "payload_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "payload_truncated": { "type": "boolean", "default": false },
+    "s3_uri": { "type": "string", "format": "uri" },
+    "headers": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "consumer_group": { "type": "string" },
+    "retry_generation": { "type": "integer", "minimum": 0, "default": 0 },
+    "processing_latency_ms": { "type": "integer", "minimum": 0 },
+    "outcome": {
+      "type": "string",
+      "enum": ["success", "error", "retry_scheduled"]
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    },
+    "service_name": { "type": "string" }
+  },
+  "additionalProperties": false
+}
