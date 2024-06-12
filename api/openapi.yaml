@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  title: Replay Control Plane API
+  version: 0.1.0
+  description: MVP API for ingest, incidents, agents, and replay control.
+
+servers:
+  - url: https://api.replay.example/v1
+    description: Production
+  - url: http://localhost:8080/v1
+    description: Local gateway
+
+security:
+  - ApiKeyAuth: []
+  - SessionCookie: []
+
+paths:
+  /ingest/batch:
+    post:
+      summary: Ingest a batch of captured events
+      operationId: ingestBatch
+      tags: [Ingestion]
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestBatchRequest'
+      responses:
+        '202':
+          description: Batch accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestBatchResponse'
+        '400':
+          description: Invalid payload
+        '401':
+          description: Unauthorized
+        '429':
+          description: Quota exceeded
+
+  /agents/register:
+    post:
+      summary: Register a capture agent
+      operationId: registerAgent
+      tags: [Agents]
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentRegisterRequest'
+      responses:
+        '200':
+          description: Agent registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentRegisterResponse'
+
+  /agents/heartbeat:
+    post:
+      summary: Agent heartbeat
+      operationId: agentHeartbeat
+      tags: [Agents]
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentHeartbeatRequest'
+      responses:
+        '204':
+          description: Heartbeat recorded
+
+  /projects/{projectId}/incidents:
+    post:
+      summary: Create an incident
+      operationId: createIncident
+      tags: [Incidents]
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCreateRequest'
+      responses:
+        '201':
+          description: Incident created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
+  /incidents/{incidentId}:
+    get:
+      summary: Get incident detail
+      operationId: getIncident
+      tags: [Incidents]
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IncidentId'
+      responses:
+        '200':
+          description: Incident detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Incident'
+
+  /incidents/{incidentId}/timeline:
+    get:
+      summary: Get incident timeline
+      operationId: getIncidentTimeline
+      tags: [Incidents]
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IncidentId'
+      responses:
+        '200':
+          description: Timeline artifact
+        '409':
+          description: Timeline not ready
+
+  /incidents/{incidentId}/replays:
+    post:
+      summary: Start a replay run
+      operationId: createReplay
+      tags: [Replays]
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/IncidentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReplayRequest'
+      responses:
+        '201':
+          description: Replay started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayRun'
+
+  /replays/{replayId}:
+    get:
+      summary: Get replay run status
+      operationId: getReplay
+      tags: [Replays]
+      security:
+        - SessionCookie: []
+      parameters:
+        - name: replayId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Replay status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReplayRun'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Replay-Key
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: replay_session
+
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IncidentId:
+      name: incidentId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    CapturedEvent:
+      type: object
+      required: [event_id, project_id, captured_at, source, topic, partition, offset, timestamp]
+      properties:
+        event_id: { type: string, format: uuid }
+        project_id: { type: string, format: uuid }
+        captured_at: { type: string, format: date-time }
+        source: { type: string, enum: [consumer, producer] }
+        topic: { type: string }
+        partition: { type: integer }
+        offset: { type: integer }
+        timestamp: { type: string, format: date-time }
+        outcome: { type: string, enum: [success, error, retry_scheduled] }
+        retry_generation: { type: integer }
+
+    IngestBatchRequest:
+      type: object
+      required: [events]
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapturedEvent'
+
+    IngestBatchResponse:
+      type: object
+      properties:
+        accepted: { type: integer }
+        duplicates_ignored: { type: integer }
+        rejected: { type: integer }
+
+    AgentRegisterRequest:
+      type: object
+      properties:
+        hostname: { type: string }
+        version: { type: string }
+        topics: { type: array, items: { type: string } }
+
+    AgentRegisterResponse:
+      type: object
+      properties:
+        agent_id: { type: string, format: uuid }
+
+    AgentHeartbeatRequest:
+      type: object
+      required: [agent_id]
+      properties:
+        agent_id: { type: string, format: uuid }
+        events_shipped: { type: integer }
+
+    IncidentCreateRequest:
+      type: object
+      required: [window_start, window_end]
+      properties:
+        window_start: { type: string, format: date-time }
+        window_end: { type: string, format: date-time }
+        topic_filters: { type: array, items: { type: string } }
+
+    Incident:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [collecting, ready, failed] }
+        event_count: { type: integer }
+
+    CreateReplayRequest:
+      type: object
+      properties:
+        timing_mode: { type: string, enum: [strict, compressed] }
+
+    ReplayRun:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [pending, running, succeeded, failed, diverged, cancelled]
+        divergence_index: { type: integer, nullable: true }
