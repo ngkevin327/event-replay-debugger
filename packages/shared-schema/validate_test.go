@@ -32,6 +32,12 @@ func TestValidateInvalidFixtures(t *testing.T) {
 	}
 }
 
+func TestValidateRejectsEmptyObject(t *testing.T) {
+	if err := sharedschema.ValidateCapturedEvent([]byte(`{}`)); err == nil {
+		t.Fatal("expected validation error for empty object")
+	}
+}
+
 func readFixture(t *testing.T, name string) []byte {
 	t.Helper()
 	path := filepath.Join("tests", "fixtures", name)
