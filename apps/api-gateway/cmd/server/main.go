@@ -9,15 +9,18 @@ import (
 	"time"
 
 	"github.com/replay/platform/apps/api-gateway/internal/config"
+	"github.com/replay/platform/apps/api-gateway/internal/logging"
 	"github.com/replay/platform/apps/api-gateway/internal/server"
 )
 
 func main() {
 	cfg, err := config.Load()
 	if err != nil {
-		slog.Error("config", "err", err)
+		slog.Error("config", "err", err) // before logger init
 		os.Exit(1)
 	}
+
+	slog.SetDefault(logging.New(cfg.LogLevel))
 
 	srv := server.New(cfg)
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
