@@ -1,6 +1,7 @@
 go 1.22
 
 use (
+	./apps/api-gateway
 	./packages/shared-go
 	./packages/shared-schema
 )
