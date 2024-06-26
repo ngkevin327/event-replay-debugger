@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/replay/platform/apps/api-gateway/internal/config"
+	gwmw "github.com/replay/platform/apps/api-gateway/internal/middleware"
 )
 
 // Server wraps the HTTP listener and router.
@@ -21,9 +22,10 @@ type Server struct {
 // New builds a Server with routes registered.
 func New(cfg config.Config) *Server {
 	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
+	r.Use(gwmw.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
+	r.Use(gwmw.CORS)
 
 	s := &Server{cfg: cfg, router: r}
 	s.registerRoutes()
