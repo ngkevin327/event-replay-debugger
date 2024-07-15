@@ -20,7 +20,7 @@ type Server struct {
 }
 
 // New builds a Server with routes registered.
-func New(cfg config.Config) *Server {
+func New(cfg config.Config, deps RouteDeps) *Server {
 	r := chi.NewRouter()
 	r.Use(gwmw.RequestID)
 	r.Use(middleware.RealIP)
@@ -28,7 +28,7 @@ func New(cfg config.Config) *Server {
 	r.Use(gwmw.CORS)
 
 	s := &Server{cfg: cfg, router: r}
-	s.registerRoutes()
+	s.registerRoutes(deps)
 
 	s.http = &http.Server{
 		Addr:         cfg.HTTPAddr,
@@ -40,9 +40,12 @@ func New(cfg config.Config) *Server {
 	return s
 }
 
-func (s *Server) registerRoutes() {
+func (s *Server) registerRoutes(deps RouteDeps) {
 	s.router.Get("/health", s.handleHealth)
 	s.router.Get("/ready", s.handleReady)
+	if deps.Store != nil {
+		RegisterV1Routes(s.router, deps)
+	}
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {

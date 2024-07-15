@@ -10,7 +10,7 @@ import (
 )
 
 func TestHealthOK(t *testing.T) {
-	srv := server.New(config.Config{HTTPAddr: ":0"})
+	srv := server.New(config.Config{HTTPAddr: ":0"}, server.RouteDeps{})
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
 	srv.Router().ServeHTTP(rec, req)
@@ -20,7 +20,7 @@ func TestHealthOK(t *testing.T) {
 }
 
 func TestReadyOK(t *testing.T) {
-	srv := server.New(config.Config{HTTPAddr: ":0"})
+	srv := server.New(config.Config{HTTPAddr: ":0"}, server.RouteDeps{})
 	req := httptest.NewRequest(http.MethodGet, "/ready", nil)
 	rec := httptest.NewRecorder()
 	srv.Router().ServeHTTP(rec, req)

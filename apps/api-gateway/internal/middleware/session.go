@@ -8,11 +8,11 @@ import (
 	"github.com/replay/platform/apps/api-gateway/internal/auth"
 )
 
-type ctxKey string
+type sessionCtxKey string
 
 const (
-	ctxUserID ctxKey = "user_id"
-	ctxOrgID  ctxKey = "org_id"
+	ctxUserID sessionCtxKey = "user_id"
+	ctxOrgID  sessionCtxKey = "org_id"
 )
 
 // UserIDFromContext returns the authenticated user id.

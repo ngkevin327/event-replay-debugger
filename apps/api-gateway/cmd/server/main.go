@@ -9,8 +9,10 @@ import (
 	"time"
 
 	"github.com/replay/platform/apps/api-gateway/internal/config"
+	"github.com/replay/platform/apps/api-gateway/internal/db"
 	"github.com/replay/platform/apps/api-gateway/internal/logging"
 	"github.com/replay/platform/apps/api-gateway/internal/server"
+	"github.com/replay/platform/apps/api-gateway/internal/store"
 )
 
 func main() {
@@ -22,7 +24,18 @@ func main() {
 
 	slog.SetDefault(logging.New(cfg.LogLevel))
 
-	srv := server.New(cfg)
+	deps := server.RouteDeps{JWTSecret: cfg.JWTSecret}
+	if cfg.DatabaseURL != "" {
+		pool, err := db.OpenPostgres(context.Background(), cfg.DatabaseURL)
+		if err != nil {
+			slog.Error("database", "err", err)
+			os.Exit(1)
+		}
+		defer pool.Close()
+		deps.Store = store.NewStore(pool)
+	}
+
+	srv := server.New(cfg, deps)
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
