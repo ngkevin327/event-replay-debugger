@@ -27,18 +27,21 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 		v1.Post("/auth/register", register.ServeHTTP)
 		v1.Post("/auth/login", login.ServeHTTP)
 
+		admin := gwmw.RequireRole(deps.Store, store.RoleAdmin)
+		member := gwmw.RequireRole(deps.Store, store.RoleMember)
+
 		v1.Group(func(authed chi.Router) {
 			authed.Use(session)
 			authed.Get("/orgs/{id}", orgs.GetOrg)
-			authed.Put("/orgs/{id}", orgs.UpdateOrg)
-			authed.Post("/orgs", orgs.CreateOrg)
+			authed.With(admin).Put("/orgs/{id}", orgs.UpdateOrg)
+			authed.With(member).Post("/orgs", orgs.CreateOrg)
 
 			authed.Get("/projects", projects.ListProjects)
-			authed.Post("/projects", projects.CreateProject)
+			authed.With(member).Post("/projects", projects.CreateProject)
 			authed.Get("/projects/{id}", projects.GetProject)
 
-			authed.Post("/projects/{id}/api-keys", keys.CreateAPIKey)
-			authed.Post("/projects/{id}/api-keys/{keyId}/rotate", keys.RotateAPIKey)
+			authed.With(admin).Post("/projects/{id}/api-keys", keys.CreateAPIKey)
+			authed.With(admin).Post("/projects/{id}/api-keys/{keyId}/rotate", keys.RotateAPIKey)
 		})
 	})
 }

@@ -40,6 +40,16 @@ func (s *Store) GetPrimaryOrgForUser(ctx context.Context, userID string) (string
 	return orgID, err
 }
 
+// GetMembershipRole returns a user's role within an organization.
+func (s *Store) GetMembershipRole(ctx context.Context, orgID, userID string) (MembershipRole, error) {
+	var role MembershipRole
+	err := s.pool.QueryRow(ctx,
+		`SELECT role FROM memberships WHERE org_id = $1 AND user_id = $2`,
+		orgID, userID,
+	).Scan(&role)
+	return role, err
+}
+
 // CreateMembership links a user to an organization.
 func (s *Store) CreateMembership(ctx context.Context, orgID, userID string, role MembershipRole) error {
 	_, err := s.pool.Exec(ctx,
