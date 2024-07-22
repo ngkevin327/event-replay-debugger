@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/replay/platform/apps/api-gateway/internal/audit"
 	"github.com/replay/platform/apps/api-gateway/internal/handlers"
 	gwmw "github.com/replay/platform/apps/api-gateway/internal/middleware"
 	"github.com/replay/platform/apps/api-gateway/internal/store"
@@ -10,6 +11,7 @@ import (
 // RouteDeps bundles handlers for v1 registration.
 type RouteDeps struct {
 	Store     *store.Store
+	Audit     *audit.Logger
 	JWTSecret string
 }
 
@@ -19,7 +21,8 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	login := &handlers.LoginHandler{Store: deps.Store, JWTSecret: deps.JWTSecret}
 	orgs := &handlers.OrgsHandler{Store: deps.Store}
 	projects := &handlers.ProjectsHandler{Store: deps.Store}
-	keys := &handlers.APIKeysHandler{Store: deps.Store}
+	keys := &handlers.APIKeysHandler{Store: deps.Store, Audit: deps.Audit}
+	members := &handlers.MembersHandler{Store: deps.Store, Audit: deps.Audit}
 
 	session := gwmw.RequireSession(deps.JWTSecret)
 
@@ -42,6 +45,10 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 
 			authed.With(admin).Post("/projects/{id}/api-keys", keys.CreateAPIKey)
 			authed.With(admin).Post("/projects/{id}/api-keys/{keyId}/rotate", keys.RotateAPIKey)
+
+			authed.With(admin).Post("/orgs/{id}/members", members.InviteMember)
+			authed.With(admin).Put("/orgs/{id}/members/{userId}", members.UpdateRole)
+			authed.With(admin).Delete("/orgs/{id}/members/{userId}", members.RemoveMember)
 		})
 	})
 }

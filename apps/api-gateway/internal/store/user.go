@@ -58,3 +58,21 @@ func (s *Store) CreateMembership(ctx context.Context, orgID, userID string, role
 	)
 	return err
 }
+
+// UpdateMembershipRole changes a member role.
+func (s *Store) UpdateMembershipRole(ctx context.Context, orgID, userID string, role MembershipRole) error {
+	_, err := s.pool.Exec(ctx,
+		`UPDATE memberships SET role = $3 WHERE org_id = $1 AND user_id = $2`,
+		orgID, userID, role,
+	)
+	return err
+}
+
+// DeleteMembership removes a user from an organization.
+func (s *Store) DeleteMembership(ctx context.Context, orgID, userID string) error {
+	_, err := s.pool.Exec(ctx,
+		`DELETE FROM memberships WHERE org_id = $1 AND user_id = $2`,
+		orgID, userID,
+	)
+	return err
+}

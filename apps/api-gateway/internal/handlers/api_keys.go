@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/replay/platform/apps/api-gateway/internal/audit"
 	"github.com/replay/platform/apps/api-gateway/internal/auth"
 	gwmw "github.com/replay/platform/apps/api-gateway/internal/middleware"
 	"github.com/replay/platform/apps/api-gateway/internal/store"
@@ -13,6 +14,7 @@ import (
 // APIKeysHandler manages project API keys.
 type APIKeysHandler struct {
 	Store *store.Store
+	Audit *audit.Logger
 }
 
 type createKeyRequest struct {
@@ -72,6 +74,9 @@ func (h *APIKeysHandler) CreateAPIKey(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusInternalServerError, "internal_error", "could not store key")
 		return
 	}
+	if actor, ok := gwmw.UserIDFromContext(r.Context()); ok && h.Audit != nil {
+		h.Audit.LogAction(actor, "api_key.create", "project", projectID, r.RemoteAddr)
+	}
 	writeJSON(w, http.StatusCreated, createKeyResponse{
 		ID:        row.ID,
 		ProjectID: row.ProjectID,
@@ -112,6 +117,9 @@ func (h *APIKeysHandler) RotateAPIKey(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "internal_error", "could not store key")
 		return
+	}
+	if actor, ok := gwmw.UserIDFromContext(r.Context()); ok && h.Audit != nil {
+		h.Audit.LogAction(actor, "api_key.rotate", "api_key", keyID, r.RemoteAddr)
 	}
 	writeJSON(w, http.StatusCreated, createKeyResponse{
 		ID:        row.ID,

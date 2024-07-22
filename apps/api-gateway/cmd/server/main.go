@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/replay/platform/apps/api-gateway/internal/audit"
 	"github.com/replay/platform/apps/api-gateway/internal/config"
 	"github.com/replay/platform/apps/api-gateway/internal/db"
 	"github.com/replay/platform/apps/api-gateway/internal/logging"
@@ -33,6 +34,7 @@ func main() {
 		}
 		defer pool.Close()
 		deps.Store = store.NewStore(pool)
+		deps.Audit = audit.New(pool)
 	}
 
 	srv := server.New(cfg, deps)
