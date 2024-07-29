@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/replay/platform/apps/ingestion/internal/metrics"
 )
 
 // Server hosts ingestion HTTP endpoints.
@@ -37,14 +38,22 @@ func New(addr string) *Server {
 // RegisterRoutes mounts ingestion API routes.
 func (s *Server) RegisterRoutes() {
 	s.router.Get("/health", s.handleHealth)
-	s.router.Post("/v1/ingest/batch", s.handleIngestBatchStub)
+	s.router.Handle("/metrics", metrics.Handler())
+	s.router.Post("/v1/ingest/batch", s.handleIngestBatch)
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func (s *Server) handleIngestBatchStub(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) handleIngestBatch(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	defer metrics.ObserveBatch(start)
+	if r.Method != http.MethodPost {
+		metrics.IncBatchError()
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method_not_allowed"})
+		return
+	}
 	writeJSON(w, http.StatusAccepted, map[string]string{
 		"status": "accepted",
 		"note":   "batch ingest stub",
