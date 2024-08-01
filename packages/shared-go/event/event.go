@@ -2,6 +2,9 @@ package event
 
 import "time"
 
+// MaxPayloadBytes is the ingest truncation ceiling aligned with PRD §6.3.
+const MaxPayloadBytes = 256 * 1024
+
 // Outcome describes handler or delivery result for a captured record.
 type Outcome string
 
