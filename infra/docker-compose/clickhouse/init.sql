@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS replay;
 
+-- Events index for ingest pipeline (Stage 2).
 CREATE TABLE IF NOT EXISTS replay.events
 (
     event_id UUID,
