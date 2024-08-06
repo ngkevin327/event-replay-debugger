@@ -9,7 +9,7 @@ import (
 )
 
 func TestServerHealth(t *testing.T) {
-	srv := server.New(":0")
+	srv := server.New(":0", server.Deps{})
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
 	srv.Router().ServeHTTP(rec, req)

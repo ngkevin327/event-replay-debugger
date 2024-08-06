@@ -15,16 +15,17 @@ import (
 type Server struct {
 	router chi.Router
 	http   *http.Server
+	deps   Deps
 }
 
 // New constructs the ingestion server.
-func New(addr string) *Server {
+func New(addr string, deps Deps) *Server {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 
-	s := &Server{router: r}
+	s := &Server{router: r, deps: deps}
 	s.RegisterRoutes()
 	s.http = &http.Server{
 		Addr:         addr,
@@ -39,7 +40,11 @@ func New(addr string) *Server {
 func (s *Server) RegisterRoutes() {
 	s.router.Get("/health", s.handleHealth)
 	s.router.Handle("/metrics", metrics.Handler())
-	s.router.Post("/v1/ingest/batch", s.handleIngestBatch)
+	if s.deps.Ingest != nil {
+		s.router.Post("/v1/ingest/batch", s.deps.Ingest.ServeHTTP)
+	} else {
+		s.router.Post("/v1/ingest/batch", s.handleIngestBatch)
+	}
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
@@ -49,15 +54,7 @@ func (s *Server) handleHealth(w http.ResponseWriter, _ *http.Request) {
 func (s *Server) handleIngestBatch(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	defer metrics.ObserveBatch(start)
-	if r.Method != http.MethodPost {
-		metrics.IncBatchError()
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method_not_allowed"})
-		return
-	}
-	writeJSON(w, http.StatusAccepted, map[string]string{
-		"status": "accepted",
-		"note":   "batch ingest stub",
-	})
+	writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted"})
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
