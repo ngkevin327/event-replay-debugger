@@ -13,6 +13,7 @@ import (
 	"github.com/replay/platform/apps/ingestion/internal/batch"
 	"github.com/replay/platform/apps/ingestion/internal/config"
 	"github.com/replay/platform/apps/ingestion/internal/handlers"
+	"github.com/replay/platform/apps/ingestion/internal/index"
 	"github.com/replay/platform/apps/ingestion/internal/server"
 	"github.com/replay/platform/apps/ingestion/internal/storage"
 )
@@ -29,10 +30,14 @@ func main() {
 		deps.S3 = s3
 		deps.Uploader = &batch.Uploader{S3: s3, Workers: 4}
 	}
+	ch := index.NewCHClient(cfg.ClickHouseURL)
+	deps.CH = ch
+	deps.Writer = index.NewWriter(ch)
 	if deps.Validator != nil && deps.Uploader != nil {
 		deps.Ingest = &handlers.IngestHandler{
 			Validator: deps.Validator,
 			Uploader:  deps.Uploader,
+			Writer:    deps.Writer,
 			OrgID:     os.Getenv("DEFAULT_ORG_ID"),
 		}
 	}

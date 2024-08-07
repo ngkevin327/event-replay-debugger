@@ -5,6 +5,7 @@ import (
 	"github.com/replay/platform/apps/ingestion/internal/batch"
 	"github.com/replay/platform/apps/ingestion/internal/config"
 	"github.com/replay/platform/apps/ingestion/internal/handlers"
+	"github.com/replay/platform/apps/ingestion/internal/index"
 	"github.com/replay/platform/apps/ingestion/internal/storage"
 )
 
@@ -14,5 +15,7 @@ type Deps struct {
 	Validator *auth.Validator
 	S3        *storage.S3Client
 	Uploader  *batch.Uploader
+	CH        *index.CHClient
+	Writer    *index.Writer
 	Ingest    *handlers.IngestHandler
 }

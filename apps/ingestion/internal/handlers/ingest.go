@@ -7,6 +7,7 @@ import (
 
 	"github.com/replay/platform/apps/ingestion/internal/auth"
 	"github.com/replay/platform/apps/ingestion/internal/batch"
+	"github.com/replay/platform/apps/ingestion/internal/index"
 	"github.com/replay/platform/apps/ingestion/internal/metrics"
 	"github.com/replay/platform/packages/shared-go/event"
 )
@@ -15,6 +16,7 @@ import (
 type IngestHandler struct {
 	Validator *auth.Validator
 	Uploader  *batch.Uploader
+	Writer    *index.Writer
 	OrgID     string
 }
 
@@ -67,6 +69,14 @@ func (h *IngestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		filtered = uploaded
+	}
+
+	if h.Writer != nil && len(filtered) > 0 {
+		if err := h.Writer.WriteBatch(r.Context(), h.OrgID, filtered); err != nil {
+			metrics.IncBatchError()
+			writeError(w, http.StatusInternalServerError, "index_failed", "clickhouse insert failed")
+			return
+		}
 	}
 
 	writeJSON(w, http.StatusAccepted, ingestResponse{
