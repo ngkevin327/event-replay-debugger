@@ -17,5 +17,6 @@ type Deps struct {
 	Uploader  *batch.Uploader
 	CH        *index.CHClient
 	Writer    *index.Writer
+	Dedup     *index.Dedup
 	Ingest    *handlers.IngestHandler
 }

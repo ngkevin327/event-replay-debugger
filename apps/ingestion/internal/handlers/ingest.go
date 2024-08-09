@@ -17,6 +17,7 @@ type IngestHandler struct {
 	Validator *auth.Validator
 	Uploader  *batch.Uploader
 	Writer    *index.Writer
+	Dedup     *index.Dedup
 	OrgID     string
 }
 
@@ -52,9 +53,17 @@ func (h *IngestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	filtered := make([]event.CapturedEvent, 0, len(req.Events))
 	rejected := 0
+	dupes := 0
 	for _, ev := range req.Events {
 		if ev.ProjectID != projectID {
 			rejected++
+			continue
+		}
+		if h.Dedup != nil && h.Dedup.IsDuplicate(index.DedupKey{
+			ProjectID: ev.ProjectID, Topic: ev.Topic, Partition: ev.Partition,
+			Offset: ev.Offset, ConsumerGroup: ev.ConsumerGroup,
+		}) {
+			dupes++
 			continue
 		}
 		filtered = append(filtered, ev)
@@ -81,7 +90,7 @@ func (h *IngestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusAccepted, ingestResponse{
 		Accepted:          len(filtered),
-		DuplicatesIgnored: 0,
+		DuplicatesIgnored: dupes,
 		Rejected:          rejected,
 	})
 }

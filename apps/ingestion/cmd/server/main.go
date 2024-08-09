@@ -33,11 +33,13 @@ func main() {
 	ch := index.NewCHClient(cfg.ClickHouseURL)
 	deps.CH = ch
 	deps.Writer = index.NewWriter(ch)
+	deps.Dedup = index.NewDedup()
 	if deps.Validator != nil && deps.Uploader != nil {
 		deps.Ingest = &handlers.IngestHandler{
 			Validator: deps.Validator,
 			Uploader:  deps.Uploader,
 			Writer:    deps.Writer,
+			Dedup:     deps.Dedup,
 			OrgID:     os.Getenv("DEFAULT_ORG_ID"),
 		}
 	}
