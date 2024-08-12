@@ -9,6 +9,7 @@ import (
 	"github.com/replay/platform/apps/ingestion/internal/batch"
 	"github.com/replay/platform/apps/ingestion/internal/index"
 	"github.com/replay/platform/apps/ingestion/internal/metrics"
+	"github.com/replay/platform/apps/ingestion/internal/quota"
 	"github.com/replay/platform/packages/shared-go/event"
 )
 
@@ -18,6 +19,7 @@ type IngestHandler struct {
 	Uploader  *batch.Uploader
 	Writer    *index.Writer
 	Dedup     *index.Dedup
+	Quota     *quota.Enforcer
 	OrgID     string
 }
 
@@ -49,6 +51,14 @@ func (h *IngestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		metrics.IncBatchError()
 		writeError(w, http.StatusBadRequest, "invalid_json", "invalid body")
 		return
+	}
+
+	if h.Quota != nil {
+		if err := h.Quota.EnforceQuota(r.Context(), h.OrgID, len(req.Events)); err != nil {
+			metrics.IncBatchError()
+			writeError(w, http.StatusTooManyRequests, "quota_exceeded", err.Error())
+			return
+		}
 	}
 
 	filtered := make([]event.CapturedEvent, 0, len(req.Events))

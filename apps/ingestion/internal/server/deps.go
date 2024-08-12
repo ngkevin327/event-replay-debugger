@@ -6,6 +6,7 @@ import (
 	"github.com/replay/platform/apps/ingestion/internal/config"
 	"github.com/replay/platform/apps/ingestion/internal/handlers"
 	"github.com/replay/platform/apps/ingestion/internal/index"
+	"github.com/replay/platform/apps/ingestion/internal/quota"
 	"github.com/replay/platform/apps/ingestion/internal/storage"
 )
 
@@ -18,5 +19,6 @@ type Deps struct {
 	CH        *index.CHClient
 	Writer    *index.Writer
 	Dedup     *index.Dedup
+	Quota     *quota.Enforcer
 	Ingest    *handlers.IngestHandler
 }

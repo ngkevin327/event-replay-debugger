@@ -14,6 +14,7 @@ import (
 	"github.com/replay/platform/apps/ingestion/internal/config"
 	"github.com/replay/platform/apps/ingestion/internal/handlers"
 	"github.com/replay/platform/apps/ingestion/internal/index"
+	"github.com/replay/platform/apps/ingestion/internal/quota"
 	"github.com/replay/platform/apps/ingestion/internal/server"
 	"github.com/replay/platform/apps/ingestion/internal/storage"
 )
@@ -34,12 +35,14 @@ func main() {
 	deps.CH = ch
 	deps.Writer = index.NewWriter(ch)
 	deps.Dedup = index.NewDedup()
+	deps.Quota = quota.NewEnforcer(0)
 	if deps.Validator != nil && deps.Uploader != nil {
 		deps.Ingest = &handlers.IngestHandler{
 			Validator: deps.Validator,
 			Uploader:  deps.Uploader,
 			Writer:    deps.Writer,
 			Dedup:     deps.Dedup,
+			Quota:     deps.Quota,
 			OrgID:     os.Getenv("DEFAULT_ORG_ID"),
 		}
 	}
