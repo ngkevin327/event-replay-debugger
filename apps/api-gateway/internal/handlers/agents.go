@@ -33,3 +33,27 @@ func (h *AgentsHandler) RegisterAgent(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusCreated, map[string]string{"agent_id": agent.ID})
 }
+
+type heartbeatRequest struct {
+	AgentID       string `json:"agent_id"`
+	EventsShipped int    `json:"events_shipped"`
+}
+
+// HeartbeatAgent handles POST /v1/agents/heartbeat.
+func (h *AgentsHandler) HeartbeatAgent(w http.ResponseWriter, r *http.Request) {
+	var req heartbeatRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid_json", "invalid body")
+		return
+	}
+	agent, err := h.Store.UpsertHeartbeat(r.Context(), req.AgentID, req.EventsShipped)
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "agent not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"agent_id": agent.ID,
+		"status":   store.AgentStatus(agent.LastHeartbeatAt),
+	})
+}
+
