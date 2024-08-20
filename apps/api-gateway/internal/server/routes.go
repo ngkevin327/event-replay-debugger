@@ -23,6 +23,7 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	projects := &handlers.ProjectsHandler{Store: deps.Store}
 	keys := &handlers.APIKeysHandler{Store: deps.Store, Audit: deps.Audit}
 	members := &handlers.MembersHandler{Store: deps.Store, Audit: deps.Audit}
+	agents := &handlers.AgentsHandler{Store: deps.Store}
 
 	session := gwmw.RequireSession(deps.JWTSecret)
 
@@ -49,6 +50,10 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 			authed.With(admin).Post("/orgs/{id}/members", members.InviteMember)
 			authed.With(admin).Put("/orgs/{id}/members/{userId}", members.UpdateRole)
 			authed.With(admin).Delete("/orgs/{id}/members/{userId}", members.RemoveMember)
+
+			authed.With(member).Post("/agents/register", agents.RegisterAgent)
+			authed.Post("/agents/heartbeat", agents.HeartbeatAgent)
+			authed.Get("/agents", agents.ListAgents)
 		})
 	})
 }
