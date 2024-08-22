@@ -79,6 +79,12 @@ func (h *IngestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		filtered = append(filtered, ev)
 	}
 
+	if h.Writer != nil && h.Writer.Backpressure() {
+		metrics.IncBatchError()
+		writeError(w, http.StatusTooManyRequests, "backpressure", "index overloaded")
+		return
+	}
+
 	if h.Uploader != nil && len(filtered) > 0 {
 		h.Uploader.OrgID = h.OrgID
 		uploaded, err := h.Uploader.UploadBatch(r.Context(), filtered)

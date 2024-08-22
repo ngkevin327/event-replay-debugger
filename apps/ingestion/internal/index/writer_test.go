@@ -2,7 +2,6 @@ package index_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/replay/platform/apps/ingestion/internal/index"
 )
@@ -12,8 +11,4 @@ func TestBackpressure(t *testing.T) {
 	if w.Backpressure() {
 		t.Fatal("expected no backpressure initially")
 	}
-}
-
-func TestBackpressureThreshold(t *testing.T) {
-	_ = time.Millisecond
 }
