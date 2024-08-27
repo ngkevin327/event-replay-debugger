@@ -3,6 +3,7 @@ go 1.25.0
 use (
 	./apps/api-gateway
 	./apps/ingestion
+	./packages/agent-go
 	./packages/shared-go
 	./packages/shared-schema
 )
