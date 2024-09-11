@@ -39,6 +39,7 @@ type CapturedEvent struct {
 	S3URI               string            `json:"s3_uri,omitempty"`
 	Headers             map[string]string `json:"headers,omitempty"`
 	ConsumerGroup       string            `json:"consumer_group,omitempty"`
+	// RetryGeneration links capture records across handler retries (Stage 5+).
 	RetryGeneration     int               `json:"retry_generation,omitempty"`
 	ProcessingLatencyMs int64             `json:"processing_latency_ms,omitempty"`
 	Outcome             Outcome           `json:"outcome,omitempty"`
