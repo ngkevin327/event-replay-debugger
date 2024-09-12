@@ -28,8 +28,14 @@ func (noopHandler) ConsumeClaim(sarama.ConsumerGroupSession, sarama.ConsumerGrou
 	return nil
 }
 
+// CaptureTimeout is the default async enqueue timeout when none is provided.
+const CaptureTimeout = 10 * time.Millisecond
+
 // WrapConsumerHandler returns a handler that captures records around delegate setup.
 func WrapConsumerHandler(inner sarama.ConsumerGroupHandler, hook CaptureHook, captureTimeout time.Duration) *ConsumerWrapper {
+	if captureTimeout == 0 {
+		captureTimeout = CaptureTimeout
+	}
 	if inner == nil {
 		inner = noopHandler{}
 	}
