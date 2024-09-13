@@ -42,3 +42,11 @@ func TestHookOrdering(t *testing.T) {
 		t.Fatalf("order %v", order)
 	}
 }
+
+func TestConsumerHookOrderingRetryLabel(t *testing.T) {
+	ev := event.CapturedEvent{Topic: "orders"}
+	kafka.LabelOutcome(&ev, 2, event.OutcomeError, nil)
+	if ev.RetryGeneration != 2 {
+		t.Fatalf("gen %d", ev.RetryGeneration)
+	}
+}
