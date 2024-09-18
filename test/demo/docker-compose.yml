@@ -1,0 +1,18 @@
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.8
+    command:
+      - redpanda start --overprovisioned --smp 1 --memory 512M --reserve-memory 0M
+        --node-id 0 --kafka-addr PLAINTEXT://0.0.0.0:9092
+        --advertise-kafka-addr PLAINTEXT://localhost:19092
+    ports:
+      - "19092:9092"
+
+  payment-worker:
+    build:
+      context: ./payment-worker
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      KAFKA_TOPIC: payments.settlement
+    depends_on:
+      - redpanda
