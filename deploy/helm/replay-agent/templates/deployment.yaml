@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-replay-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: replay-agent
+  template:
+    metadata:
+      labels:
+        app: replay-agent
+    spec:
+      containers:
+        - name: agent
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REPLAY_PROJECT_ID
+              value: {{ .Values.projectId | quote }}
+            - name: REPLAY_INGEST_URL
+              value: {{ .Values.ingest.url | quote }}
+            - name: REPLAY_CONTROL_PLANE_URL
+              value: {{ .Values.controlPlane.url | quote }}
+            - name: REPLAY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.apiKeySecretName }}
+                  key: api-key
+          volumeMounts:
+            - name: agent-config
+              mountPath: /etc/replay
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: agent-config
+          configMap:
+            name: {{ .Release.Name }}-replay-agent-config

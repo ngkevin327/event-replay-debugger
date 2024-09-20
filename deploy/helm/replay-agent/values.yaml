@@ -1,0 +1,25 @@
+image:
+  repository: replay/agent
+  tag: latest
+  pullPolicy: IfNotPresent
+
+ingest:
+  url: http://ingestion:8081/v1/ingest/batch
+
+controlPlane:
+  url: http://api-gateway:8080
+
+projectId: ""
+apiKeySecretName: replay-agent-api-key
+
+topicAllowlist:
+  - payments.settlement
+  - orders
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
