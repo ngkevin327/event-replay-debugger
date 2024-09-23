@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-replay-agent-config
+data:
+  agent.yaml: |
+    topicAllowlist:
+    {{- range .Values.topicAllowlist }}
+      - {{ . }}
+    {{- end }}
+    batchSize: 100
+    flushInterval: 5s
