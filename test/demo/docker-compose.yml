@@ -14,5 +14,9 @@ services:
     environment:
       KAFKA_BROKERS: redpanda:9092
       KAFKA_TOPIC: payments.settlement
+      REPLAY_PROJECT_ID: ${REPLAY_PROJECT_ID:-}
+      REPLAY_API_KEY: ${REPLAY_API_KEY:-}
+      REPLAY_INGEST_URL: http://host.docker.internal:8081/v1/ingest/batch
+      REPLAY_CAPTURE_TIMEOUT: 10ms
     depends_on:
       - redpanda
