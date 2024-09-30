@@ -22,3 +22,7 @@ func BenchmarkConsumerLag(b *testing.B) {
 func BenchmarkCaptureTimeout(b *testing.B) {
 	BenchmarkConsumerLag(b)
 }
+
+func BenchmarkCapture(b *testing.B) {
+	BenchmarkConsumerLag(b)
+}
