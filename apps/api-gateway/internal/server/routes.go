@@ -24,6 +24,7 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	keys := &handlers.APIKeysHandler{Store: deps.Store, Audit: deps.Audit}
 	members := &handlers.MembersHandler{Store: deps.Store, Audit: deps.Audit}
 	agents := &handlers.AgentsHandler{Store: deps.Store}
+	incidents := &handlers.IncidentsHandler{Store: deps.Store}
 
 	session := gwmw.RequireSession(deps.JWTSecret)
 
@@ -43,6 +44,10 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 			authed.Get("/projects", projects.ListProjects)
 			authed.With(member).Post("/projects", projects.CreateProject)
 			authed.Get("/projects/{id}", projects.GetProject)
+
+			authed.With(member).Post("/projects/{projectId}/incidents", incidents.CreateIncident)
+			authed.Get("/projects/{projectId}/incidents", incidents.ListIncidents)
+			authed.Get("/incidents/{incidentId}", incidents.GetIncident)
 
 			authed.With(admin).Post("/projects/{id}/api-keys", keys.CreateAPIKey)
 			authed.With(admin).Post("/projects/{id}/api-keys/{keyId}/rotate", keys.RotateAPIKey)

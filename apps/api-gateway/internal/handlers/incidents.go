@@ -53,3 +53,42 @@ func (h *IncidentsHandler) CreateIncident(w http.ResponseWriter, r *http.Request
 	}
 	writeJSON(w, http.StatusCreated, inc)
 }
+
+// ListIncidents handles GET /v1/projects/{projectId}/incidents.
+func (h *IncidentsHandler) ListIncidents(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+	orgID, ok := gwmw.OrgIDFromContext(r.Context())
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized", "session required")
+		return
+	}
+	project, err := h.Store.GetProject(r.Context(), projectID)
+	if err != nil || project.OrgID != orgID {
+		writeError(w, http.StatusNotFound, "not_found", "project not found")
+		return
+	}
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	incidents, err := h.Store.ListIncidents(r.Context(), orgID, projectID, limit, offset)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "internal_error", "could not list incidents")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"incidents": incidents})
+}
+
+// GetIncident handles GET /v1/incidents/{incidentId}.
+func (h *IncidentsHandler) GetIncident(w http.ResponseWriter, r *http.Request) {
+	incidentID := chi.URLParam(r, "incidentId")
+	orgID, ok := gwmw.OrgIDFromContext(r.Context())
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized", "session required")
+		return
+	}
+	inc, err := h.Store.GetIncident(r.Context(), orgID, incidentID)
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "incident not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, inc)
+}
