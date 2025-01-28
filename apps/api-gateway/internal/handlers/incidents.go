@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	gwmw "github.com/replay/platform/apps/api-gateway/internal/middleware"
+	"github.com/replay/platform/apps/api-gateway/internal/quota"
 	"github.com/replay/platform/apps/api-gateway/internal/store"
 )
 
@@ -90,5 +91,30 @@ func (h *IncidentsHandler) GetIncident(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "not_found", "incident not found")
 		return
 	}
+	org, err := h.Store.GetOrganization(r.Context(), orgID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "internal_error", "could not load org")
+		return
+	}
+	pct := RetentionCoveragePercent(org.PlanTier, inc.WindowStart, inc.WindowEnd, time.Now())
+	inc.CoveragePercent = &pct
 	writeJSON(w, http.StatusOK, inc)
+}
+
+// RetentionCoveragePercent estimates how much of the requested window is within plan retention.
+func RetentionCoveragePercent(planTier string, windowStart, windowEnd, now time.Time) float64 {
+	clampedStart, clampedEnd := quota.ClampQueryWindow(planTier, windowStart, windowEnd, now)
+	requested := windowEnd.Sub(windowStart).Seconds()
+	if requested <= 0 {
+		return 0
+	}
+	available := clampedEnd.Sub(clampedStart).Seconds()
+	if available <= 0 {
+		return 0
+	}
+	pct := (available / requested) * 100
+	if pct > 100 {
+		return 100
+	}
+	return pct
 }
