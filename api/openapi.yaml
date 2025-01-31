@@ -81,6 +81,32 @@ paths:
           description: Heartbeat recorded
 
   /projects/{projectId}/incidents:
+    get:
+      summary: List incidents for a project
+      operationId: listIncidents
+      tags: [Incidents]
+      security:
+        - SessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0 }
+      responses:
+        '200':
+          description: Incident list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  incidents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Incident'
     post:
       summary: Create an incident
       operationId: createIncident
@@ -270,8 +296,15 @@ components:
       type: object
       properties:
         id: { type: string, format: uuid }
+        project_id: { type: string, format: uuid }
         status: { type: string, enum: [collecting, ready, failed] }
+        window_start: { type: string, format: date-time }
+        window_end: { type: string, format: date-time }
+        topic_filters: { type: array, items: { type: string } }
         event_count: { type: integer }
+        coverage_percent: { type: number, format: float }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
 
     CreateReplayRequest:
       type: object
