@@ -35,3 +35,13 @@ jobs:
 
       - name: Test
         run: make test
+
+  oas-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: OpenAPI diff gate
+        run: bash scripts/oas-diff.sh origin/main
