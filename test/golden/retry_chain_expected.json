@@ -1,0 +1,10 @@
+{
+  "chain_count": 1,
+  "chains": [
+    {
+      "correlation_id": "pay-1",
+      "payload_hash": "abc",
+      "generations": [0, 1]
+    }
+  ]
+}
