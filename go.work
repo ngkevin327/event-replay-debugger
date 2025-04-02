@@ -4,7 +4,9 @@ use (
 	./apps/api-gateway
 	./apps/ingestion
 	./apps/reconstruction
+	./apps/replay-orchestrator
 	./packages/agent-go
 	./packages/shared-go
 	./packages/shared-schema
+	./services/replay-worker
 )
