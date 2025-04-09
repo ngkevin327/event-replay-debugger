@@ -54,7 +54,7 @@ func AddEdges(g *Graph, rows []fetch.EventRow) {
 	}
 }
 
-// MarkFailed flags nodes with error outcomes.
+// MarkFailed flags nodes with error outcomes for failure highlighting.
 func MarkFailed(g *Graph, rows []fetch.EventRow) {
 	failed := map[string]bool{}
 	for _, row := range rows {
