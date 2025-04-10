@@ -55,3 +55,53 @@ func (h *ReplaysHandler) CreateReplay(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusCreated, run)
 }
+
+// GetReplay handles GET /v1/replays/{replayId}.
+func (h *ReplaysHandler) GetReplay(w http.ResponseWriter, r *http.Request) {
+	replayID := chi.URLParam(r, "replayId")
+	orgID, ok := gwmw.OrgIDFromContext(r.Context())
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized", "session required")
+		return
+	}
+	run, err := h.Store.GetReplayRun(r.Context(), orgID, replayID)
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "replay not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{
+		"replay":              run,
+		"divergence_summary": DivergenceSummary(run),
+	})
+}
+
+// DivergenceSummary builds a compact divergence payload for API clients.
+func DivergenceSummary(run store.ReplayRun) map[string]any {
+	out := map[string]any{"status": run.Status}
+	if run.DivergenceIndex != nil {
+		out["first_mismatch_index"] = *run.DivergenceIndex
+	}
+	if run.ReportURI != nil {
+		out["report_uri"] = *run.ReportURI
+	}
+	return out
+}
+
+// CancelReplay handles DELETE /v1/replays/{replayId}.
+func (h *ReplaysHandler) CancelReplay(w http.ResponseWriter, r *http.Request) {
+	replayID := chi.URLParam(r, "replayId")
+	orgID, ok := gwmw.OrgIDFromContext(r.Context())
+	if !ok {
+		writeError(w, http.StatusUnauthorized, "unauthorized", "session required")
+		return
+	}
+	if _, err := h.Store.GetReplayRun(r.Context(), orgID, replayID); err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "replay not found")
+		return
+	}
+	if err := h.Store.CancelReplayRun(r.Context(), replayID); err != nil {
+		writeError(w, http.StatusInternalServerError, "internal_error", "could not cancel replay")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"status": "cancelled"})
+}

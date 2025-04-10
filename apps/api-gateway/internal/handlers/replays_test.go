@@ -6,13 +6,6 @@ import (
 	"github.com/replay/platform/apps/api-gateway/internal/store"
 )
 
-func TestCreateReplayTimingValidation(t *testing.T) {
-	mode := "strict"
-	if mode != "strict" && mode != "compressed" {
-		t.Fatal()
-	}
-}
-
 func TestGetStatusDivergenceSummary(t *testing.T) {
 	idx := 3
 	sum := DivergenceSummary(store.ReplayRun{
@@ -23,9 +16,16 @@ func TestGetStatusDivergenceSummary(t *testing.T) {
 	}
 }
 
-func TestCancelReplayHandlerExists(t *testing.T) {
-	h := &ReplaysHandler{}
-	if h == nil {
+func TestCancelReplay(t *testing.T) {
+	if (&ReplaysHandler{}) == nil {
 		t.Fatal()
 	}
 }
+
+func TestCreateReplayTimingValidation(t *testing.T) {
+	mode := "strict"
+	if mode != "strict" && mode != "compressed" {
+		t.Fatal()
+	}
+}
+
