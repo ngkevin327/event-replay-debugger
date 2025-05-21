@@ -1,0 +1,21 @@
+{
+  "title": "Replay Engine",
+  "panels": [
+    {
+      "title": "Replay success rate",
+      "type": "stat",
+      "targets": [{ "expr": "replay_success_total" }]
+    },
+    {
+      "title": "Diverged replays",
+      "type": "graph",
+      "targets": [{ "expr": "replay_diverged_total" }]
+    },
+    {
+      "title": "Replay duration p95",
+      "type": "graph",
+      "targets": [{ "expr": "histogram_quantile(0.95, replay_duration_ms)" }]
+    }
+  ],
+  "schemaVersion": 38
+}
