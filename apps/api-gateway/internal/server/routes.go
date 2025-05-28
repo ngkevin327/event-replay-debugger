@@ -25,6 +25,10 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	members := &handlers.MembersHandler{Store: deps.Store, Audit: deps.Audit}
 	agents := &handlers.AgentsHandler{Store: deps.Store}
 	incidents := &handlers.IncidentsHandler{Store: deps.Store}
+	timeline := &handlers.TimelineHandler{Loader: handlers.StubTimelineLoader{}}
+	graph := &handlers.GraphHandler{Loader: handlers.StubGraphLoader{}}
+	replays := &handlers.ReplaysHandler{Store: deps.Store}
+	snapshots := &handlers.SnapshotsHandler{Store: deps.Store}
 
 	session := gwmw.RequireSession(deps.JWTSecret)
 
@@ -48,6 +52,12 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 			authed.With(member).Post("/projects/{projectId}/incidents", incidents.CreateIncident)
 			authed.Get("/projects/{projectId}/incidents", incidents.ListIncidents)
 			authed.Get("/incidents/{incidentId}", incidents.GetIncident)
+			authed.Get("/incidents/{incidentId}/timeline", timeline.GetTimeline)
+			authed.Get("/incidents/{incidentId}/graph", graph.GetGraph)
+			authed.With(member).Post("/incidents/{incidentId}/replays", replays.CreateReplay)
+			authed.Get("/replays/{replayId}", replays.GetReplay)
+			authed.Delete("/replays/{replayId}", replays.CancelReplay)
+			authed.With(member).Post("/incidents/{incidentId}/snapshots", snapshots.IngestSnapshot)
 
 			authed.With(admin).Post("/projects/{id}/api-keys", keys.CreateAPIKey)
 			authed.With(admin).Post("/projects/{id}/api-keys/{keyId}/rotate", keys.RotateAPIKey)
