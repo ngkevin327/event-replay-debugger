@@ -21,6 +21,12 @@ func UserIDFromContext(ctx context.Context) (string, bool) {
 	return v, ok && v != ""
 }
 
+// TestContextWithOrg attaches user/org for handler unit tests.
+func TestContextWithOrg(ctx context.Context, orgID string) context.Context {
+	ctx = context.WithValue(ctx, ctxUserID, "test-user")
+	return context.WithValue(ctx, ctxOrgID, orgID)
+}
+
 // OrgIDFromContext returns the active organization id.
 func OrgIDFromContext(ctx context.Context) (string, bool) {
 	v, ok := ctx.Value(ctxOrgID).(string)
