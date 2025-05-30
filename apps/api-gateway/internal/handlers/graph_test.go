@@ -21,7 +21,7 @@ func TestGetGraph(t *testing.T) {
 	req = req.WithContext(gwmw.TestContextWithOrg(req.Context(), "org-1"))
 	rec := httptest.NewRecorder()
 	h.GetGraph(rec, req)
-	if rec.Code != http.StatusConflict {
+	if rec.Code != http.StatusOK {
 		t.Fatalf("status %d", rec.Code)
 	}
 }

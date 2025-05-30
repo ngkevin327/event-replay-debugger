@@ -12,6 +12,8 @@ import (
 type stubTimeline struct{}
 
 func (stubTimeline) LoadTimeline(ctx context.Context, incidentID string) ([]byte, int, error) {
+	_ = ctx
+	_ = incidentID
 	return []byte(`{"events":[]}`), 1, nil
 }
 
@@ -21,7 +23,7 @@ func TestGetTimeline(t *testing.T) {
 	req = req.WithContext(gwmw.TestContextWithOrg(req.Context(), "org-1"))
 	rec := httptest.NewRecorder()
 	h.GetTimeline(rec, req)
-	if rec.Code != http.StatusConflict {
+	if rec.Code != http.StatusOK {
 		t.Fatalf("status %d", rec.Code)
 	}
 }
