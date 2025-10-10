@@ -1,0 +1,7 @@
+replay:
+  apiUrl: http://api-gateway:8080/v1
+  apiKey: replay_live_CHANGE_ME
+agent:
+  topics:
+    - payments
+    - notifications
