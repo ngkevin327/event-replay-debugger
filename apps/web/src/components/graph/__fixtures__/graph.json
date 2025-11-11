@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    { "id": "svc:payment-worker", "kind": "service", "failed": true },
+    { "id": "topic:payments", "kind": "topic", "topic": "payments", "failed": true },
+    { "id": "svc:ledger-svc", "kind": "service" },
+    { "id": "topic:ledger", "kind": "topic", "topic": "ledger" }
+  ],
+  "edges": [
+    { "from": "svc:payment-worker", "to": "topic:payments" },
+    { "from": "topic:payments", "to": "svc:ledger-svc" },
+    { "from": "svc:ledger-svc", "to": "topic:ledger" }
+  ]
+}
