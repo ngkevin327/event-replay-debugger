@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Replay completed</h1>
+    <p>Replay <strong>{{.ReplayID}}</strong> for incident {{.IncidentID}} finished with status
+      <strong>{{.Status}}</strong>.</p>
+    {{if .DivergenceCount}}
+    <section>
+      <h2>Divergence summary</h2>
+      <p>{{.DivergenceCount}} mismatches detected.</p>
+      <p>First mismatch index: {{.FirstMismatchIndex}}</p>
+    </section>
+    {{else}}
+    <p>No divergences reported.</p>
+    {{end}}
+    <p><a href="{{.ReplayURL}}">View replay report</a></p>
+  </body>
+</html>

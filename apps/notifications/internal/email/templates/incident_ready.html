@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Incident ready</h1>
+    <p>Hello,</p>
+    <p>
+      Incident <strong>{{.IncidentID}}</strong> in project
+      <strong>{{.ProjectName}}</strong> is ready for timeline review.
+    </p>
+    <p>Events captured: {{.EventCount}}</p>
+    <p>Coverage: {{.CoveragePercent}}%</p>
+    <p><a href="{{.IncidentURL}}">Open incident</a></p>
+  </body>
+</html>
