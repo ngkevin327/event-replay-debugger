@@ -29,6 +29,9 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	graph := &handlers.GraphHandler{Loader: handlers.StubGraphLoader{}}
 	replays := &handlers.ReplaysHandler{Store: deps.Store}
 	snapshots := &handlers.SnapshotsHandler{Store: deps.Store}
+	notifications := &handlers.NotificationsHandler{Store: deps.Store}
+	exportH := &handlers.ExportHandler{Store: deps.Store}
+	share := &handlers.ShareHandler{Store: deps.Store}
 
 	session := gwmw.RequireSession(deps.JWTSecret)
 
@@ -48,10 +51,14 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 			authed.Get("/projects", projects.ListProjects)
 			authed.With(member).Post("/projects", projects.CreateProject)
 			authed.Get("/projects/{id}", projects.GetProject)
+			authed.Get("/projects/{id}/notification-preferences", notifications.GetPrefs)
+			authed.With(admin).Put("/projects/{id}/notification-preferences", notifications.PutPrefs)
 
 			authed.With(member).Post("/projects/{projectId}/incidents", incidents.CreateIncident)
 			authed.Get("/projects/{projectId}/incidents", incidents.ListIncidents)
 			authed.Get("/incidents/{incidentId}", incidents.GetIncident)
+			authed.Get("/incidents/{incidentId}/export", exportH.ExportIncidentSummary)
+			authed.With(member).Post("/incidents/{incidentId}/share-tokens", share.CreateShareToken)
 			authed.Get("/incidents/{incidentId}/timeline", timeline.GetTimeline)
 			authed.Get("/incidents/{incidentId}/graph", graph.GetGraph)
 			authed.With(member).Post("/incidents/{incidentId}/replays", replays.CreateReplay)
@@ -69,6 +76,12 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 			authed.With(member).Post("/agents/register", agents.RegisterAgent)
 			authed.Post("/agents/heartbeat", agents.HeartbeatAgent)
 			authed.Get("/agents", agents.ListAgents)
+		})
+
+		v1.Route("/shared", func(shared chi.Router) {
+			shared.Use(gwmw.ShareTokenAuth(handlers.LookupShareToken))
+			shared.Use(gwmw.RequireReadOnly)
+			shared.Get("/incidents/{incidentId}", share.GetSharedIncident)
 		})
 	})
 }
