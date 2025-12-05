@@ -18,6 +18,7 @@ import { WorkflowGraph } from "@/components/graph/WorkflowGraph";
 import { useIncidentSelection } from "@/hooks/useIncidentSelection";
 import { ReplayPanel } from "@/components/replay/ReplayPanel";
 import { ReplayHistory } from "@/components/replay/ReplayHistory";
+import { IncidentActions } from "@/components/IncidentActions";
 import { useReplayList } from "@/api/hooks";
 import type { GraphPayload } from "@/api/generated";
 import type { TimelineEvent } from "@/components/timeline/types";
@@ -80,6 +81,7 @@ export default function IncidentDetail() {
         status={incident.status}
         coverage={incident.coverage_percent ?? 0}
       />
+      <IncidentActions incidentId={incidentId} />
       {!ready && (
         <>
           <ReconstructionProgress step={incident.status} />

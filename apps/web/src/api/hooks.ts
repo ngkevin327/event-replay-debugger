@@ -73,3 +73,33 @@ export function useReplayList(_incidentId: string) {
     queryFn: async () => ({ replays: [] as ReplayRun[] }),
   });
 }
+
+export function useExportIncident(incidentId: string) {
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/v1/incidents/${incidentId}/export`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("replay_token") ?? ""}`,
+        },
+      });
+      if (!res.ok) throw new Error("export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `incident-${incidentId}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+  });
+}
+
+export function useCreateShare(incidentId: string) {
+  return useMutation({
+    mutationFn: (ttl_hours: number) =>
+      apiFetch<{ token: string; expires_at: string; url: string }>(
+        `/v1/incidents/${incidentId}/share-tokens`,
+        { method: "POST", body: JSON.stringify({ ttl_hours }) },
+      ),
+  });
+}
