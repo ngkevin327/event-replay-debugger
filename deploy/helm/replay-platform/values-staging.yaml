@@ -1,0 +1,25 @@
+global:
+  environment: staging
+  imageRegistry: ghcr.io/replay-platform
+
+apiGateway:
+  replicaCount: 2
+  image:
+    tag: staging
+  env:
+    LOG_LEVEL: debug
+
+ingestion:
+  replicaCount: 2
+  image:
+    tag: staging
+
+reconstruction:
+  replicaCount: 1
+  image:
+    tag: staging
+
+ingress:
+  enabled: true
+  host: staging.replay.example
+  tlsSecretName: staging-replay-tls

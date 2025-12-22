@@ -1,0 +1,46 @@
+name: Deploy staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/helm/**"
+      - "apps/**"
+      - ".github/workflows/deploy-staging.yml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-kubectl@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.STAGING_KUBECONFIG }}" | base64 -d > ~/.kube/config
+
+      - name: Helm upgrade staging
+        run: |
+          helm upgrade --install replay-platform deploy/helm/replay-platform \
+            --namespace replay --create-namespace \
+            -f deploy/helm/replay-platform/values.yaml \
+            -f deploy/helm/replay-platform/values-staging.yaml \
+            --set apiGateway.image.tag=${{ github.sha }} \
+            --set ingestion.image.tag=${{ github.sha }} \
+            --set reconstruction.image.tag=${{ github.sha }} \
+            --wait --timeout 10m
+
+      - name: Smoke health
+        run: |
+          kubectl -n replay rollout status deployment/replay-platform-api-gateway
+          kubectl -n replay port-forward svc/replay-platform-api-gateway 8080:8080 &
+          sleep 3
+          curl -sf http://localhost:8080/health
+          curl -sf http://localhost:8080/status || true
