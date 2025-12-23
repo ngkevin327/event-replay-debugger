@@ -1,0 +1,29 @@
+global:
+  environment: production
+  imageRegistry: ghcr.io/replay-platform
+
+apiGateway:
+  replicaCount: 3
+  image:
+    tag: prod
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 1Gi
+
+ingestion:
+  replicaCount: 3
+
+reconstruction:
+  replicaCount: 2
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+ingress:
+  enabled: true
+  host: api.replay.example

@@ -1,0 +1,44 @@
+name: Deploy production
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://api.replay.example
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.PROD_KUBECONFIG }}" | base64 -d > ~/.kube/config
+
+      - name: Require manual approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: platform-oncall
+          minimum-approvals: 1
+          issue-title: "Production deploy ${{ github.ref_name }}"
+          issue-body: "Approve deploy of tag ${{ github.ref_name }} to production EKS."
+
+      - name: Helm upgrade production
+        run: |
+          helm upgrade --install replay-platform deploy/helm/replay-platform \
+            --namespace replay \
+            -f deploy/helm/replay-platform/values.yaml \
+            -f deploy/helm/replay-platform/values-prod.yaml \
+            --set apiGateway.image.tag=${{ github.ref_name }} \
+            --set ingestion.image.tag=${{ github.ref_name }} \
+            --set reconstruction.image.tag=${{ github.ref_name }} \
+            --wait --timeout 15m
