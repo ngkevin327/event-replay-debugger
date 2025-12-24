@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/replay/platform/apps/api-gateway/internal/config"
+	"github.com/replay/platform/apps/api-gateway/internal/handlers"
 	gwmw "github.com/replay/platform/apps/api-gateway/internal/middleware"
 )
 
@@ -43,6 +44,7 @@ func New(cfg config.Config, deps RouteDeps) *Server {
 func (s *Server) registerRoutes(deps RouteDeps) {
 	s.router.Get("/health", s.handleHealth)
 	s.router.Get("/ready", s.handleReady)
+	s.router.Get("/status", handlers.PublicStatus)
 	if deps.Store != nil {
 		RegisterV1Routes(s.router, deps)
 	}
