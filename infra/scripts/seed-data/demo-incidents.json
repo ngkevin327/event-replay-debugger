@@ -1,0 +1,47 @@
+{
+  "org": {
+    "name": "Demo Partners",
+    "plan_tier": "starter"
+  },
+  "user": {
+    "email": "demo@replay.example",
+    "password": "demo-password-change-me",
+    "org_name": "Demo Partners"
+  },
+  "project": {
+    "name": "payments-sandbox"
+  },
+  "incidents": [
+    {
+      "label": "payment-timeout-golden",
+      "window_start": "2026-05-01T10:00:00Z",
+      "window_end": "2026-05-01T10:15:00Z",
+      "topic_filters": ["payments", "payments-retry"],
+      "expected_status": "ready",
+      "event_count": 842
+    },
+    {
+      "label": "ledger-divergence-golden",
+      "window_start": "2026-05-02T14:00:00Z",
+      "window_end": "2026-05-02T14:30:00Z",
+      "topic_filters": ["ledger"],
+      "expected_status": "ready",
+      "event_count": 1204
+    },
+    {
+      "label": "notification-storm",
+      "window_start": "2026-05-03T08:00:00Z",
+      "window_end": "2026-05-03T08:45:00Z",
+      "topic_filters": ["notifications"],
+      "expected_status": "ready",
+      "event_count": 3200
+    }
+  ],
+  "notification_preferences": {
+    "webhook_url": "https://webhook.site/demo-replay-staging",
+    "email_enabled": true,
+    "email_recipients": ["demo@replay.example"],
+    "notify_incident_ready": true,
+    "notify_replay_completed": true
+  }
+}
