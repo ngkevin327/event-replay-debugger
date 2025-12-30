@@ -27,6 +27,7 @@ func New(cfg config.Config, deps RouteDeps) *Server {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(gwmw.CORS)
+	r.Use(gwmw.RateLimit(gwmw.NewRateLimiter(100, 200)))
 
 	s := &Server{cfg: cfg, router: r}
 	s.registerRoutes(deps)
