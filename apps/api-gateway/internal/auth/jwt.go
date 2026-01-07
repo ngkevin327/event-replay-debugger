@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -34,6 +35,10 @@ func IssueTokens(secret, userID, orgID string) (TokenPair, error) {
 		return TokenPair{}, fmt.Errorf("jwt secret required")
 	}
 	now := time.Now()
+	keyID := os.Getenv("JWT_KEY_ID")
+	if keyID == "" {
+		keyID = "replay-v1"
+	}
 	accessClaims := Claims{
 		UserID: userID,
 		OrgID:  orgID,
@@ -41,9 +46,14 @@ func IssueTokens(secret, userID, orgID string) (TokenPair, error) {
 			ExpiresAt: jwt.NewNumericDate(now.Add(accessTokenTTL)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			Subject:   userID,
+			ID:        keyID,
 		},
 	}
-	access, err := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims).SignedString([]byte(secret))
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	if keyID != "" {
+		token.Header["kid"] = keyID
+	}
+	access, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return TokenPair{}, fmt.Errorf("sign access: %w", err)
 	}
