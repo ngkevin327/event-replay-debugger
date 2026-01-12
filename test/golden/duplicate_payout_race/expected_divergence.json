@@ -1,0 +1,14 @@
+{
+  "scenario": "duplicate_payout_race",
+  "description": "Double settlement when retry and primary payout both succeed",
+  "expected_replay_outcomes": [
+    { "result": "ok" },
+    { "result": "ok" },
+    { "result": "diverged", "mismatch_index": 3, "reason": "duplicate ledger credit" }
+  ],
+  "divergence_summary": {
+    "first_mismatch_index": 3,
+    "topic": "ledger",
+    "expected_offset": 50
+  }
+}

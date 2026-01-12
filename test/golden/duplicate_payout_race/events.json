@@ -1,0 +1,40 @@
+[
+  {
+    "event_id": "e1",
+    "topic": "payments",
+    "partition": 0,
+    "offset": 100,
+    "timestamp": "2026-05-10T12:00:00Z",
+    "outcome": "success",
+    "payload": { "payment_id": "pay-1", "amount": 1000 }
+  },
+  {
+    "event_id": "e2",
+    "topic": "payments",
+    "partition": 0,
+    "offset": 101,
+    "timestamp": "2026-05-10T12:00:01Z",
+    "outcome": "retry_scheduled",
+    "retry_generation": 1,
+    "payload": { "payment_id": "pay-1", "amount": 1000 }
+  },
+  {
+    "event_id": "e3",
+    "topic": "payments",
+    "partition": 0,
+    "offset": 102,
+    "timestamp": "2026-05-10T12:00:02Z",
+    "outcome": "success",
+    "retry_generation": 1,
+    "payload": { "payment_id": "pay-1", "amount": 1000 }
+  },
+  {
+    "event_id": "e4",
+    "topic": "ledger",
+    "partition": 0,
+    "offset": 50,
+    "timestamp": "2026-05-10T12:00:03Z",
+    "outcome": "success",
+    "payload": { "ledger_entry": "credit", "amount": 1000 }
+  }
+]

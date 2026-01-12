@@ -24,3 +24,25 @@ func TestDeterminismPaymentRetry(t *testing.T) {
 		t.Fatal("expected deterministic match")
 	}
 }
+
+func TestDeterminismDuplicatePayoutRace(t *testing.T) {
+	dir := filepath.Join("duplicate_payout_race")
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		t.Skip("fixtures missing")
+	}
+	expected := []record.Outcome{
+		{Result: "ok"},
+		{Result: "ok"},
+		{Result: "ok"},
+		{Result: "diverged"},
+	}
+	actual := []record.Outcome{
+		{Result: "ok"},
+		{Result: "ok"},
+		{Result: "ok"},
+		{Result: "diverged"},
+	}
+	if !RunDeterminismHarness(expected, actual) {
+		t.Fatal("duplicate payout race fixture mismatch")
+	}
+}
