@@ -1,0 +1,32 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  load-ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run k6 ingest load
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: test/load/ingest_load.js
+        env:
+          K6_TARGET_URL: ${{ vars.STAGING_INGEST_URL || 'http://localhost:8081' }}
+          K6_EPS_TARGET: "10000"
+
+  e2e-platform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Platform e2e (optional)
+        run: go test -tags=e2e ./test/e2e/... -count=1
+        env:
+          E2E_API_URL: ${{ vars.STAGING_API_URL || 'http://localhost:8080' }}
+        continue-on-error: true
