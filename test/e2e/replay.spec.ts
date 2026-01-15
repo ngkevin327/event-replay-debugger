@@ -10,4 +10,8 @@ test("start replay mock terminal succeeded", async ({ page }) => {
   );
   await page.goto("/incidents/inc-mock");
   await expect(page.locator("h1")).toBeVisible();
+  await page.waitForTimeout(100);
+  await expect(page.getByRole("button", { name: /replay/i })).toBeVisible({
+    timeout: 5_000,
+  });
 });

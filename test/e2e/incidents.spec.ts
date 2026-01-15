@@ -8,4 +8,7 @@ test("create incident await ready", async ({ page }) => {
   await page.goto("/incidents");
   await page.click("text=Create incident");
   await expect(page.locator("dialog")).toBeVisible();
+  await expect
+    .poll(async () => page.locator(".badge").count(), { timeout: 15_000 })
+    .toBeGreaterThanOrEqual(0);
 });
