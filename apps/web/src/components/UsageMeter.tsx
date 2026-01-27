@@ -13,7 +13,9 @@ export function UsageMeter({ projectId }: { projectId: string }) {
       aria-valuemax={100}
       aria-label="Daily event usage"
     >
-      <span>Usage {percent}%</span>
+      <span>
+        Usage {percent}% · Plan: starter
+      </span>
       <div className="bar" data-warn={warn} style={{ width: `${percent}%` }} />
       {warn && <p role="status">Approaching plan limit</p>}
     </div>
