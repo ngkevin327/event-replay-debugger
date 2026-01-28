@@ -4,6 +4,8 @@ description: Umbrella chart for Replay control plane and workers
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+annotations:
+  release: v0.1.0-mvp
 keywords:
   - replay
   - incident
