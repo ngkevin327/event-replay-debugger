@@ -25,8 +25,8 @@ func RegisterV1Routes(r chi.Router, deps RouteDeps) {
 	members := &handlers.MembersHandler{Store: deps.Store, Audit: deps.Audit}
 	agents := &handlers.AgentsHandler{Store: deps.Store}
 	incidents := &handlers.IncidentsHandler{Store: deps.Store}
-	timeline := &handlers.TimelineHandler{Loader: handlers.StubTimelineLoader{}}
-	graph := &handlers.GraphHandler{Loader: handlers.StubGraphLoader{}}
+	timeline := &handlers.TimelineHandler{Loader: handlers.ResolveTimelineLoader()}
+	graph := &handlers.GraphHandler{Loader: handlers.ResolveGraphLoader()}
 	replays := &handlers.ReplaysHandler{Store: deps.Store}
 	snapshots := &handlers.SnapshotsHandler{Store: deps.Store}
 	notifications := &handlers.NotificationsHandler{Store: deps.Store}

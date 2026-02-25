@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -51,6 +52,13 @@ func (h *IncidentsHandler) CreateIncident(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "internal_error", "could not create incident")
 		return
+	}
+	if os.Getenv("LOCAL_DEMO_AUTO_READY") == "1" {
+		coverage := 100.0
+		_ = h.Store.UpdateIncidentStatus(r.Context(), inc.ID, store.IncidentReady, 3, &coverage)
+		inc.Status = store.IncidentReady
+		inc.EventCount = 3
+		inc.CoveragePercent = &coverage
 	}
 	writeJSON(w, http.StatusCreated, inc)
 }
