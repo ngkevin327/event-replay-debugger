@@ -1,0 +1,38 @@
+{
+  "events": [
+    {
+      "event_id": "evt-001",
+      "topic": "payments.settlement",
+      "partition": 0,
+      "offset": 1001,
+      "arrival_index": 0,
+      "retry_generation": 0,
+      "outcome": "success",
+      "correlation_id": "corr-pay-1",
+      "payload_hash": "abc123"
+    },
+    {
+      "event_id": "evt-002",
+      "topic": "payments.settlement",
+      "partition": 0,
+      "offset": 1002,
+      "arrival_index": 1,
+      "retry_generation": 1,
+      "outcome": "retry_scheduled",
+      "correlation_id": "corr-pay-1",
+      "payload_hash": "def456"
+    },
+    {
+      "event_id": "evt-003",
+      "topic": "payments.settlement",
+      "partition": 0,
+      "offset": 1003,
+      "arrival_index": 2,
+      "retry_generation": 1,
+      "outcome": "success",
+      "correlation_id": "corr-pay-1",
+      "payload_hash": "ghi789"
+    }
+  ],
+  "gaps": []
+}

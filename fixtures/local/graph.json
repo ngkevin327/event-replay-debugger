@@ -1,0 +1,12 @@
+{
+  "nodes": [
+    { "id": "producer", "kind": "producer", "topic": "payments.settlement" },
+    { "id": "consumer", "kind": "consumer", "topic": "payments.settlement" },
+    { "id": "retry", "kind": "retry", "topic": "payments.settlement" }
+  ],
+  "edges": [
+    { "from": "producer", "to": "consumer" },
+    { "from": "consumer", "to": "retry" },
+    { "from": "retry", "to": "consumer" }
+  ]
+}

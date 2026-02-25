@@ -1,12 +1,25 @@
-.PHONY: dev dev-deps build test lint clean
+.PHONY: dev dev-deps setup-local verify-local migrate-local build test lint clean
 
 GO_SERVICES := $(shell find apps services packages -name go.mod -exec dirname {} \; 2>/dev/null | sort -u)
+COMPOSE := docker compose -f infra/docker-compose/docker-compose.yml
+DATABASE_URL ?= postgres://replay:replay@localhost:5432/replay?sslmode=disable
 
 dev-deps:
-	docker compose -f infra/docker-compose/docker-compose.yml up -d
+	$(COMPOSE) up -d
+
+setup-local: dev-deps migrate-local
+	@test -f .env.local || cp .env.local.example .env.local
+	pnpm install --filter @replay/web
+	@echo "Setup complete. See docs/local-dev.md"
+
+migrate-local:
+	cd apps/api-gateway && DATABASE_URL="$(DATABASE_URL)" go run ./cmd/migrate -dir ./migrations
+
+verify-local:
+	@./scripts/verify-local.sh
 
 dev: dev-deps
-	@echo "Dependencies up. Run services individually from apps/*/cmd."
+	@echo "Dependencies up. Run: make setup-local && see docs/local-dev.md"
 
 build:
 	@for dir in $(GO_SERVICES); do \
