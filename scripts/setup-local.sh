@@ -30,7 +30,7 @@ for i in $(seq 1 30); do
 done
 
 echo "==> Applying API migrations..."
-export DATABASE_URL="${DATABASE_URL:-postgres://replay:replay@localhost:5432/replay?sslmode=disable}"
+export DATABASE_URL="${DATABASE_URL:-postgres://replay:replay@localhost:15433/replay?sslmode=disable}"
 (cd apps/api-gateway && go run ./cmd/migrate -dir ./migrations)
 
 echo "==> Installing web dependencies..."

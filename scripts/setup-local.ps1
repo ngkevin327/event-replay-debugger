@@ -28,7 +28,7 @@ for ($i = 0; $i -lt 30; $i++) {
 if (-not $ready) { throw "Postgres did not become ready in time" }
 
 Write-Host "==> Applying API migrations..."
-$env:DATABASE_URL = "postgres://replay:replay@localhost:5432/replay?sslmode=disable"
+$env:DATABASE_URL = "postgres://replay:replay@localhost:15433/replay?sslmode=disable"
 Push-Location apps/api-gateway
 go run ./cmd/migrate -dir ./migrations
 Pop-Location

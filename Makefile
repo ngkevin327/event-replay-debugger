@@ -2,7 +2,7 @@
 
 GO_SERVICES := $(shell find apps services packages -name go.mod -exec dirname {} \; 2>/dev/null | sort -u)
 COMPOSE := docker compose -f infra/docker-compose/docker-compose.yml
-DATABASE_URL ?= postgres://replay:replay@localhost:5432/replay?sslmode=disable
+DATABASE_URL ?= postgres://replay:replay@localhost:15433/replay?sslmode=disable
 
 dev-deps:
 	$(COMPOSE) up -d

@@ -4,7 +4,7 @@ CREATE TABLE offset_snapshots (
     consumer_group TEXT NOT NULL,
     topic TEXT NOT NULL,
     partition INTEGER NOT NULL,
-    offset BIGINT NOT NULL,
+    "offset" BIGINT NOT NULL,
     captured_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
