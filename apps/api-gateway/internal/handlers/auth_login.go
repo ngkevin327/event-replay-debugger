@@ -24,9 +24,8 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	AccessToken string `json:"access_token"`
-	UserID      string `json:"user_id"`
-	OrgID       string `json:"org_id"`
+	AccessToken string          `json:"access_token"`
+	User        authUserPayload `json:"user"`
 }
 
 // ServeHTTP implements POST /v1/auth/login.
@@ -87,7 +86,8 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, loginResponse{
 		AccessToken: tokens.Access,
-		UserID:      user.ID,
-		OrgID:       orgID,
+		User: authUserPayload{
+			ID: user.ID, Email: user.Email, OrgID: orgID,
+		},
 	})
 }

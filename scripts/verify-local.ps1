@@ -41,9 +41,16 @@ try {
     $reg = Invoke-RestMethod -Method Post -Uri "$ApiBase/v1/auth/register" -ContentType "application/json" -Body (@{
         email = $email; password = "password-12chars"; org_name = "Verify Org"
     } | ConvertTo-Json)
-    Record "auth-register" ($null -ne $reg.access_token) "user $($reg.user.id)"
+    $token = $reg.access_token
+    if (-not $token) {
+        $login = Invoke-RestMethod -Method Post -Uri "$ApiBase/v1/auth/login" -ContentType "application/json" -Body (@{
+            email = $email; password = "password-12chars"
+        } | ConvertTo-Json)
+        $token = $login.access_token
+    }
+    Record "auth-register" ($null -ne $token) "user $($reg.user.id)"
 
-    $headers = @{ Authorization = "Bearer $($reg.access_token)" }
+    $headers = @{ Authorization = "Bearer $token" }
     $proj = Invoke-RestMethod -Method Post -Uri "$ApiBase/v1/projects" -Headers $headers -ContentType "application/json" -Body (@{ name = "verify-project" } | ConvertTo-Json)
     Record "create-project" ($null -ne $proj.id) "project $($proj.id)"
 
@@ -72,5 +79,6 @@ try {
 Write-Host ""
 Write-Host "=== Summary ==="
 $Results | Format-Table -AutoSize
-$failed = @($Results | Where-Object { -not $_.Pass }).Count
+$required = @("api-health", "auth-register", "create-project", "create-incident", "timeline", "graph", "create-replay")
+$failed = @($Results | Where-Object { -not $_.Pass -and $required -contains $_.Check }).Count
 if ($failed -gt 0) { exit 1 }

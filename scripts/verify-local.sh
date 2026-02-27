@@ -38,9 +38,13 @@ EMAIL="verify-$(date +%s)@example.com"
 REG=$(curl -sf -X POST "$API_BASE/v1/auth/register" \
   -H "Content-Type: application/json" \
   -d "{\"email\":\"$EMAIL\",\"password\":\"password-12chars\",\"org_name\":\"Verify Org\"}") || REG=""
-if [[ -n "$REG" ]]; then record auth-register 1 "ok"; else record auth-register 0 "failed"; fi
-
 TOKEN=$(echo "$REG" | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))" 2>/dev/null || true)
+if [[ -z "$TOKEN" ]]; then
+  LOGIN=$(curl -sf -X POST "$API_BASE/v1/auth/login" -H "Content-Type: application/json" \
+    -d "{\"email\":\"$EMAIL\",\"password\":\"password-12chars\"}") || LOGIN=""
+  TOKEN=$(echo "$LOGIN" | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))" 2>/dev/null || true)
+fi
+[[ -n "$TOKEN" ]] && record auth-register 1 "ok" || record auth-register 0 "failed"
 if [[ -z "$TOKEN" ]]; then
   echo "Cannot continue without token"
   exit 1

@@ -23,7 +23,8 @@ func writeError(w http.ResponseWriter, status int, code, message string) {
 
 // RegisterHandler handles user and organization bootstrap registration.
 type RegisterHandler struct {
-	Store *store.Store
+	Store     *store.Store
+	JWTSecret string
 }
 
 type registerRequest struct {
@@ -32,10 +33,15 @@ type registerRequest struct {
 	OrgName  string `json:"org_name"`
 }
 
+type authUserPayload struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	OrgID string `json:"org_id"`
+}
+
 type registerResponse struct {
-	UserID string `json:"user_id"`
-	OrgID  string `json:"org_id"`
-	Email  string `json:"email"`
+	AccessToken string          `json:"access_token"`
+	User        authUserPayload `json:"user"`
 }
 
 // ServeHTTP implements POST /v1/auth/register.
@@ -85,9 +91,16 @@ func (h *RegisterHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokens, err := auth.IssueTokens(h.JWTSecret, user.ID, org.ID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "internal_error", "could not issue tokens")
+		return
+	}
+
 	writeJSON(w, http.StatusCreated, registerResponse{
-		UserID: user.ID,
-		OrgID:  org.ID,
-		Email:  user.Email,
+		AccessToken: tokens.Access,
+		User: authUserPayload{
+			ID: user.ID, Email: user.Email, OrgID: org.ID,
+		},
 	})
 }

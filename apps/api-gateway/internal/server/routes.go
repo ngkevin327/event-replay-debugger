@@ -17,7 +17,7 @@ type RouteDeps struct {
 
 // RegisterV1Routes mounts authenticated control-plane routes.
 func RegisterV1Routes(r chi.Router, deps RouteDeps) {
-	register := &handlers.RegisterHandler{Store: deps.Store}
+	register := &handlers.RegisterHandler{Store: deps.Store, JWTSecret: deps.JWTSecret}
 	login := &handlers.LoginHandler{Store: deps.Store, JWTSecret: deps.JWTSecret}
 	orgs := &handlers.OrgsHandler{Store: deps.Store}
 	projects := &handlers.ProjectsHandler{Store: deps.Store}
