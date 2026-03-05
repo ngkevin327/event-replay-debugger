@@ -1,5 +1,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { BrandLogo } from "./BrandLogo";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function ProjectSwitcher() {
   const projectId = localStorage.getItem("replay_project_id") ?? "";
@@ -35,6 +36,7 @@ export function AppHeader() {
       <BrandLogo size="sm" />
       <div className="header__spacer" />
       <ProjectSwitcher />
+      <ThemeToggle />
       <UserMenu />
     </header>
   );

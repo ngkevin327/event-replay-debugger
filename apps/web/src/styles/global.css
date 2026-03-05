@@ -1,4 +1,8 @@
 @import "./tokens.css";
+@import "./animations.css";
+@import "./graph.css";
+@import "./timeline.css";
+@import "./replay.css";
 
 *,
 *::before,
@@ -388,6 +392,10 @@ table.data-table td a {
   width: 100%;
 }
 
+#main > * {
+  animation: fade-in-up 0.4s ease both;
+}
+
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -773,5 +781,20 @@ dialog::backdrop {
     overflow-x: auto;
     border-right: none;
     border-bottom: 1px solid var(--color-border);
+  }
+  #main {
+    padding: var(--space-4);
+  }
+  .page-header {
+    flex-direction: column;
+  }
+  .header__project input {
+    width: 140px;
+  }
+  .workflow-graph {
+    height: 280px;
+  }
+  .event-drawer {
+    width: 100vw;
   }
 }

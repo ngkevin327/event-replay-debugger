@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Layout } from "@/components/Layout";
 import { RequireAuth } from "@/components/RequireAuth";
 import Dashboard from "@/pages/Dashboard";
@@ -15,9 +16,10 @@ import "@/styles/global.css";
 
 export default function App() {
   return (
-    <QueryProvider>
-      <AuthProvider>
-        <BrowserRouter>
+    <ThemeProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -37,8 +39,9 @@ export default function App() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </QueryProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </QueryProvider>
+    </ThemeProvider>
   );
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BrandLogo } from "./BrandLogo";
+import { AuthHeroArt } from "./illustrations/AuthHeroArt";
 
 export function AuthLayout({
   title,
@@ -30,6 +31,7 @@ export function AuthLayout({
             <li>Workflow graph visualization</li>
             <li>Deterministic replay & divergence reports</li>
           </ul>
+          <AuthHeroArt />
         </div>
       </aside>
       <main className="auth-page__main">
