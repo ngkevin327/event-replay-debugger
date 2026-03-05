@@ -13,11 +13,23 @@ export function UsageMeter({ projectId }: { projectId: string }) {
       aria-valuemax={100}
       aria-label="Daily event usage"
     >
-      <span>
-        Usage {percent}% · Plan: starter
-      </span>
-      <div className="bar" data-warn={warn} style={{ width: `${percent}%` }} />
-      {warn && <p role="status">Approaching plan limit</p>}
+      <div className="usage-meter__header">
+        <span className="usage-meter__label">Daily event usage</span>
+        <span className="usage-meter__value">{percent}%</span>
+        <span className="badge">Starter plan</span>
+      </div>
+      <div className="usage-meter__track">
+        <div
+          className="usage-meter__fill"
+          data-warn={warn}
+          style={{ width: `${Math.min(100, percent)}%` }}
+        />
+      </div>
+      {warn && (
+        <p className="usage-meter__warn" role="status">
+          Approaching plan limit — consider upgrading retention.
+        </p>
+      )}
     </div>
   );
 }

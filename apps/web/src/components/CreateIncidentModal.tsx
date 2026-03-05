@@ -14,15 +14,25 @@ export function DateRangePicker({
   onEnd: (v: string) => void;
 }) {
   return (
-    <div>
-      <label>
-        Start
-        <input type="datetime-local" value={start} onChange={(e) => onStart(e.target.value)} />
-      </label>
-      <label>
-        End
-        <input type="datetime-local" value={end} onChange={(e) => onEnd(e.target.value)} />
-      </label>
+    <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "1fr 1fr" }}>
+      <div className="form-field" style={{ marginBottom: 0 }}>
+        <label htmlFor="inc-start">Window start</label>
+        <input
+          id="inc-start"
+          type="datetime-local"
+          value={start}
+          onChange={(e) => onStart(e.target.value)}
+        />
+      </div>
+      <div className="form-field" style={{ marginBottom: 0 }}>
+        <label htmlFor="inc-end">Window end</label>
+        <input
+          id="inc-end"
+          type="datetime-local"
+          value={end}
+          onChange={(e) => onEnd(e.target.value)}
+        />
+      </div>
     </div>
   );
 }
@@ -61,15 +71,19 @@ export function CreateIncidentModal({
   }
 
   return (
-    <dialog open>
-      <form onSubmit={submit}>
+    <dialog open onClose={onClose}>
+      <form className="modal-card" onSubmit={submit}>
         <h2>Create incident</h2>
-        {error && <p role="alert">{error}</p>}
+        {error && (
+          <div className="alert alert--error" role="alert">
+            {error}
+          </div>
+        )}
         <DateRangePicker start={start} end={end} onStart={setStart} onEnd={setEnd} />
         <fieldset>
-          <legend>Topics</legend>
-          {(topics.data ?? []).map((t) => (
-            <label key={t}>
+          <legend>Topic filters</legend>
+          {(topics.data ?? ["payments.settlement"]).map((t) => (
+            <label key={t} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
               <input
                 type="checkbox"
                 checked={selected.includes(t)}
@@ -79,14 +93,20 @@ export function CreateIncidentModal({
                   )
                 }
               />
-              {t}
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-sm)" }}>
+                {t}
+              </span>
             </label>
           ))}
         </fieldset>
-        <button type="submit">Create</button>
-        <button type="button" onClick={onClose}>
-          Cancel
-        </button>
+        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", marginTop: "1.5rem" }}>
+          <button type="button" className="btn btn--ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn--primary">
+            Create incident
+          </button>
+        </div>
       </form>
     </dialog>
   );

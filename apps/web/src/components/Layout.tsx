@@ -1,6 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { AppHeader } from "./AppHeader";
 
+const navItems = [
+  { to: "/", label: "Dashboard", end: true },
+  { to: "/incidents", label: "Incidents" },
+  { to: "/agents/setup", label: "Agent setup" },
+  { to: "/settings", label: "Settings" },
+] as const;
+
 export function Layout() {
   return (
     <div className="layout">
@@ -9,12 +16,11 @@ export function Layout() {
       </a>
       <AppHeader />
       <nav className="nav" aria-label="Main">
-        <NavLink to="/" end>
-          Dashboard
-        </NavLink>
-        <NavLink to="/incidents">Incidents</NavLink>
-        <NavLink to="/settings">Settings</NavLink>
-        <NavLink to="/agents/setup">Agent setup</NavLink>
+        {navItems.map(({ to, label, ...rest }) => (
+          <NavLink key={to} to={to} {...rest}>
+            {label}
+          </NavLink>
+        ))}
       </nav>
       <main id="main">
         <Outlet />

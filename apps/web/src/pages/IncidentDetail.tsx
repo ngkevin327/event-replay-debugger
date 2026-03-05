@@ -31,12 +31,14 @@ export function IncidentHeader({
   coverage: number;
 }) {
   return (
-    <header>
+    <header className="incident-header">
       <h1>Incident</h1>
-      <span className={`badge status-${status}`} data-status={status}>
-        {status}
-      </span>
-      <CoverageBar percent={coverage} />
+      <div className="incident-header__meta">
+        <span className={`badge status-${status}`} data-status={status}>
+          {status}
+        </span>
+        <CoverageBar percent={coverage} />
+      </div>
     </header>
   );
 }
@@ -90,19 +92,37 @@ export default function IncidentDetail() {
       )}
       {ready && (
         <>
-          <div className="tabs">
-            <button type="button" onClick={() => setTab("timeline")}>
+          <div className="tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              className={tab === "timeline" ? "active" : ""}
+              aria-selected={tab === "timeline"}
+              onClick={() => setTab("timeline")}
+            >
               Timeline
             </button>
-            <button type="button" onClick={() => setTab("snapshots")}>
+            <button
+              type="button"
+              role="tab"
+              className={tab === "snapshots" ? "active" : ""}
+              aria-selected={tab === "snapshots"}
+              onClick={() => setTab("snapshots")}
+            >
               Snapshots
             </button>
-            <button type="button" onClick={() => setTab("replay")}>
+            <button
+              type="button"
+              role="tab"
+              className={tab === "replay" ? "active" : ""}
+              aria-selected={tab === "replay"}
+              onClick={() => setTab("replay")}
+            >
               Replay
             </button>
           </div>
           {tab === "timeline" && (
-            <section>
+            <section className="timeline-panel">
               <TimelineScrubber
                 max={Math.max(0, rows.length - 1)}
                 value={activeIndex}
@@ -126,6 +146,8 @@ export default function IncidentDetail() {
               )}
               <button
                 type="button"
+                className="btn btn--secondary"
+                style={{ marginTop: "1rem" }}
                 onClick={() => setDrawerOpen(true)}
                 onKeyDown={(e) => e.key === "Enter" && setDrawerOpen(true)}
               >
