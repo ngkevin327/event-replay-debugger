@@ -22,13 +22,22 @@ export function TimelineScrubber({
 }) {
   const throttled = useRef(throttleScrub(onChange)).current;
   return (
-    <input
-      type="range"
-      min={0}
-      max={Math.max(0, max)}
-      value={value}
-      aria-label="Timeline scrubber"
-      onChange={(e) => throttled(Number(e.target.value))}
-    />
+    <div className="timeline-scrubber-wrap">
+      <label htmlFor="timeline-scrub">Scrub timeline</label>
+      <input
+        id="timeline-scrub"
+        type="range"
+        min={0}
+        max={Math.max(0, max)}
+        value={value}
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        onChange={(e) => throttled(Number(e.target.value))}
+      />
+      <span className="timeline-row__meta">
+        {value + 1} / {max + 1}
+      </span>
+    </div>
   );
 }

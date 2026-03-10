@@ -1,6 +1,7 @@
 import { AgentHealthCard } from "@/components/AgentHealthCard";
 import { UsageMeter } from "@/components/UsageMeter";
 import { PageHeader } from "@/components/PageHeader";
+import { OpsIllustration } from "@/components/illustrations/OpsIllustration";
 import { useAgentHealth, useRecentIncidents } from "@/api/hooks";
 import { Link } from "react-router-dom";
 
@@ -10,7 +11,8 @@ function RecentIncidentsTable({ projectId }: { projectId: string }) {
   const rows = data?.incidents ?? [];
   if (!rows.length) {
     return (
-      <div className="empty-state">
+      <div className="empty-state empty-state--illustrated">
+        <OpsIllustration variant="timeline" />
         <p>No incidents yet.</p>
         <Link to="/incidents" className="btn btn--primary" style={{ marginTop: "1rem" }}>
           Create your first incident
@@ -73,7 +75,7 @@ export function Dashboard() {
             </Link>
           </div>
         ) : (
-          <div className="card-grid">
+          <div className="card-grid stagger-children">
             {agentList.map((a) => (
               <AgentHealthCard key={a.id} agent={a} />
             ))}

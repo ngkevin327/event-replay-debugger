@@ -5,7 +5,7 @@ export function CopyBlock({ text, label }: { text: string; label: string }) {
   return (
     <div className="copy-block">
       <pre>{text}</pre>
-      <button type="button" onClick={copy} aria-label={`Copy ${label}`}>
+      <button type="button" className="btn btn--secondary" onClick={copy} aria-label={`Copy ${label}`}>
         Copy
       </button>
     </div>

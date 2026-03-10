@@ -2,7 +2,7 @@ import { JsonViewer } from "@/components/JsonViewer";
 import type { TimelineEvent } from "./types";
 
 export function RetryBadge({ generation }: { generation: number }) {
-  return <span className="retry-badge">retry gen {generation}</span>;
+  return <span className="retry-badge">Retry gen {generation}</span>;
 }
 
 export function EventDrawer({
@@ -16,18 +16,30 @@ export function EventDrawer({
 }) {
   if (!open || !event) return null;
   return (
-    <aside className="event-drawer" role="dialog" aria-label="Event details">
-      <button type="button" onClick={onClose}>
-        Close
-      </button>
-      <h3>{event.event_id}</h3>
-      {event.retry_generation != null && (
-        <RetryBadge generation={event.retry_generation} />
-      )}
-      <p>
-        {event.topic} p{event.partition} @{event.offset}
-      </p>
-      <JsonViewer data={event} />
-    </aside>
+    <>
+      <div
+        className="event-drawer-backdrop"
+        role="presentation"
+        onClick={onClose}
+        onKeyDown={() => {}}
+      />
+      <aside className="event-drawer" role="dialog" aria-label="Event details">
+        <div className="event-drawer__header">
+          <div>
+            <h3>{event.event_id}</h3>
+            {event.retry_generation != null && (
+              <RetryBadge generation={event.retry_generation} />
+            )}
+          </div>
+          <button type="button" className="btn btn--ghost" onClick={onClose}>
+            Close
+          </button>
+        </div>
+        <p className="timeline-row__meta" style={{ marginBottom: "1rem" }}>
+          {event.topic} · partition {event.partition} · offset {event.offset}
+        </p>
+        <JsonViewer data={event} />
+      </aside>
+    </>
   );
 }

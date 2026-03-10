@@ -13,10 +13,13 @@ export function groupRows(events: TimelineEvent[]): TimelineRowItem[] {
   return events.map((e) => ({ type: "event" as const, event: e }));
 }
 
-type RowProps = ListChildComponentProps<TimelineRowItem[]>;
+type ListData = { rows: TimelineRowItem[]; activeIndex?: number };
+
+type RowProps = ListChildComponentProps<ListData>;
 
 const Row = memo(function Row({ index, style, data }: RowProps) {
-  const row = data[index];
+  const row = data.rows[index];
+  const active = data.activeIndex === index;
   if (row.type === "gap") {
     return (
       <div style={style}>
@@ -33,9 +36,19 @@ const Row = memo(function Row({ index, style, data }: RowProps) {
   }
   const e = row.event;
   return (
-    <div style={style} className="timeline-row" data-event-id={e.event_id}>
-      <span>{e.topic}</span> p{e.partition} @{e.offset}
-      {e.retry_generation ? ` gen${e.retry_generation}` : ""}
+    <div
+      style={style}
+      className={`timeline-row${active ? " is-active" : ""}`}
+      data-event-id={e.event_id}
+      data-outcome={e.outcome ?? ""}
+      role="row"
+      aria-selected={active}
+    >
+      <span className="timeline-row__topic">{e.topic}</span>
+      <span className="timeline-row__meta">
+        p{e.partition} @{e.offset}
+        {e.retry_generation ? ` · gen ${e.retry_generation}` : ""}
+      </span>
     </div>
   );
 });
@@ -55,16 +68,20 @@ export function TimelineList({
     if (activeIndex != null) onActiveChange?.(activeIndex);
   }, [activeIndex, onActiveChange]);
 
+  const itemData: ListData = { rows, activeIndex };
+
   return (
-    <List
-      height={height}
-      width="100%"
-      itemCount={rows.length}
-      itemSize={36}
-      itemData={rows}
-      onItemsRendered={onItemsRendered}
-    >
-      {Row}
-    </List>
+    <div className="timeline-list-wrap">
+      <List
+        height={height}
+        width="100%"
+        itemCount={rows.length}
+        itemSize={44}
+        itemData={itemData}
+        onItemsRendered={onItemsRendered}
+      >
+        {Row}
+      </List>
+    </div>
   );
 }
