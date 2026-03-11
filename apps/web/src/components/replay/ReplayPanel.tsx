@@ -10,7 +10,7 @@ export function TimingModeSelect({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="form-field" style={{ marginBottom: 0 }}>
+    <div className="form-field form-field--flush">
       <label htmlFor="timing-mode">Timing mode</label>
       <select
         id="timing-mode"
@@ -36,16 +36,15 @@ export function ReplayPanel({ incidentId }: { incidentId: string }) {
   }
 
   return (
-    <section className="replay-panel animate-in">
+    <section className="replay-panel">
       <h2>Start replay</h2>
-      <p style={{ color: "var(--color-text-secondary)", fontSize: "var(--text-sm)", marginBottom: "1.25rem" }}>
+      <p className="text-muted mb-4">
         Re-run captured traffic in a sandbox and compare outcomes against the original timeline.
       </p>
       <TimingModeSelect value={mode} onChange={setMode} />
       <button
         type="button"
-        className="btn btn--primary"
-        style={{ marginTop: "1.25rem" }}
+        className="btn btn--primary mt-4"
         onClick={start}
         disabled={create.isPending}
       >

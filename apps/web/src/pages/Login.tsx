@@ -62,7 +62,7 @@ export function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn--primary" style={{ width: "100%" }}>
+        <button type="submit" className="btn btn--primary btn-block">
           Sign in
         </button>
       </form>

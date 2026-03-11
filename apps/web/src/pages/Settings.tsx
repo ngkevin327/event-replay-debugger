@@ -1,25 +1,19 @@
 import { useState } from "react";
 import { TopicAllowlistEditor } from "@/components/TopicAllowlistEditor";
 import { PageHeader } from "@/components/PageHeader";
+import { Modal } from "@/components/Modal";
 import { useApiKeys } from "@/api/hooks";
 
 function ApiKeyList({ projectId }: { projectId: string }) {
   const { data } = useApiKeys(projectId);
   const keys = data?.keys ?? [];
   if (!keys.length) {
-    return <p style={{ color: "var(--color-text-secondary)" }}>No API keys yet.</p>;
+    return <p className="text-muted">No API keys yet.</p>;
   }
   return (
-    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+    <ul className="list-plain">
       {keys.map((k) => (
-        <li
-          key={k.id}
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "var(--text-sm)",
-            padding: "0.5rem 0",
-          }}
-        >
+        <li key={k.id} className="text-mono">
           {k.prefix}••••
         </li>
       ))}
@@ -34,20 +28,20 @@ export function RotateKeyModal({
   open: boolean;
   onClose: () => void;
 }) {
-  if (!open) return null;
   return (
-    <dialog open>
-      <div className="modal-card">
-        <h2>API key rotated</h2>
-        <p>Copy your new key now — it won&apos;t be shown again.</p>
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-sm)" }}>
-          replay_live_••••
-        </p>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="API key rotated"
+      footer={
         <button type="button" className="btn btn--primary" onClick={onClose}>
           Done
         </button>
-      </div>
-    </dialog>
+      }
+    >
+      <p>Copy your new key now — it won&apos;t be shown again.</p>
+      <p className="text-mono mt-4">replay_live_••••••••••••</p>
+    </Modal>
   );
 }
 
@@ -64,12 +58,7 @@ export function Settings() {
       <section className="section card">
         <h2 className="section__title">API keys</h2>
         <ApiKeyList projectId={projectId} />
-        <button
-          type="button"
-          className="btn btn--secondary"
-          style={{ marginTop: "1rem" }}
-          onClick={() => setRotateOpen(true)}
-        >
+        <button type="button" className="btn btn--secondary mt-4" onClick={() => setRotateOpen(true)}>
           Rotate key
         </button>
         <RotateKeyModal open={rotateOpen} onClose={() => setRotateOpen(false)} />

@@ -3,6 +3,7 @@
 @import "./graph.css";
 @import "./timeline.css";
 @import "./replay.css";
+@import "./components.css";
 
 *,
 *::before,
@@ -577,19 +578,13 @@ table.data-table td a {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-top: var(--space-3);
+  flex: 1;
+  min-width: 160px;
+  max-width: 280px;
 }
-.coverage-bar .fill {
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-accent-gradient);
-  min-width: 4px;
-  flex: 0 0 auto;
-  max-width: 200px;
-}
-.coverage-bar span {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+.coverage-bar .usage-meter__track {
+  flex: 1;
+  max-width: 140px;
 }
 
 /* Incident detail */

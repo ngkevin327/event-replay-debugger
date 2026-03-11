@@ -1,20 +1,21 @@
 import { AgentHealthCard } from "@/components/AgentHealthCard";
 import { UsageMeter } from "@/components/UsageMeter";
 import { PageHeader } from "@/components/PageHeader";
+import { StatusBadge } from "@/components/StatusBadge";
 import { OpsIllustration } from "@/components/illustrations/OpsIllustration";
 import { useAgentHealth, useRecentIncidents } from "@/api/hooks";
 import { Link } from "react-router-dom";
 
 function RecentIncidentsTable({ projectId }: { projectId: string }) {
   const { data, isLoading } = useRecentIncidents(projectId);
-  if (isLoading) return <p className="empty-state">Loading incidents…</p>;
+  if (isLoading) return <p className="loading-state">Loading incidents…</p>;
   const rows = data?.incidents ?? [];
   if (!rows.length) {
     return (
       <div className="empty-state empty-state--illustrated">
         <OpsIllustration variant="timeline" />
         <p>No incidents yet.</p>
-        <Link to="/incidents" className="btn btn--primary" style={{ marginTop: "1rem" }}>
+        <Link to="/incidents" className="btn btn--primary mt-4">
           Create your first incident
         </Link>
       </div>
@@ -36,7 +37,7 @@ function RecentIncidentsTable({ projectId }: { projectId: string }) {
                 <Link to={`/incidents/${inc.id}`}>{inc.id.slice(0, 8)}…</Link>
               </td>
               <td>
-                <span className={`badge status-${inc.status}`}>{inc.status}</span>
+                <StatusBadge status={inc.status} />
               </td>
             </tr>
           ))}
@@ -68,9 +69,10 @@ export function Dashboard() {
       <section className="section">
         <h2 className="section__title">Capture agents</h2>
         {agentList.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state empty-state--illustrated">
+            <OpsIllustration variant="agent" />
             <p>No agents connected.</p>
-            <Link to="/agents/setup" className="btn btn--secondary" style={{ marginTop: "1rem" }}>
+            <Link to="/agents/setup" className="btn btn--secondary mt-4">
               Set up agent
             </Link>
           </div>

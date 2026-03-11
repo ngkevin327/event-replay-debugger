@@ -2,20 +2,17 @@ import { useParams, Link } from "react-router-dom";
 import { useReplayStatus } from "@/hooks/useReplayStatus";
 import { DivergenceReport } from "@/components/replay/DivergenceReport";
 import { PageHeader } from "@/components/PageHeader";
+import { StatusBadge } from "@/components/StatusBadge";
 
-const STEPS = ["pending", "running", "succeeded", "diverged", "failed"] as const;
+const STEPS = ["pending", "running", "succeeded"] as const;
 
 export function ProgressStepper({ status }: { status: string }) {
   const idx = STEPS.indexOf(status as (typeof STEPS)[number]);
   return (
     <ol className="progress-stepper" aria-label="Replay progress">
-      {["pending", "running", "succeeded"].map((s, i) => (
-        <li
-          key={s}
-          data-active={status === s}
-          data-done={idx > i}
-        >
-          {s}
+      {STEPS.map((s, i) => (
+        <li key={s} data-active={status === s} data-done={idx > i}>
+          <StatusBadge status={s} />
         </li>
       ))}
     </ol>
@@ -33,9 +30,12 @@ export function ReplayRunPage() {
         title={`Replay ${replayId.slice(0, 8)}…`}
         description="Track replay execution and review divergence when outcomes differ."
         actions={
-          <Link to="/incidents" className="btn btn--secondary">
-            Back to incidents
-          </Link>
+          <>
+            <StatusBadge status={status} />
+            <Link to="/incidents" className="btn btn--secondary">
+              Back to incidents
+            </Link>
+          </>
         }
       />
       <ProgressStepper status={status} />
@@ -49,7 +49,7 @@ export function ReplayRunPage() {
         </div>
       )}
       {status === "pending" && (
-        <p className="empty-state" style={{ marginTop: "2rem" }}>
+        <p className="empty-state mt-6">
           Replay is queued. The orchestrator will start the worker shortly.
         </p>
       )}

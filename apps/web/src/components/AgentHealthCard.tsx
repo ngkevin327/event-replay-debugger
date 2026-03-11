@@ -1,16 +1,12 @@
 import type { Agent } from "@/api/generated";
-
-function statusBadge(status?: string) {
-  if (status === "healthy") return "Healthy";
-  if (status === "offline") return "Offline";
-  return "Unknown";
-}
+import { StatusBadge } from "@/components/StatusBadge";
 
 export function AgentHealthCard({ agent }: { agent: Agent }) {
+  const label = agent.status ?? "unknown";
   return (
-    <article className="agent-card" data-status={agent.status ?? "unknown"}>
+    <article className="agent-card" data-status={label}>
       <h3>{agent.hostname ?? agent.id}</h3>
-      <span className="badge">{statusBadge(agent.status)}</span>
+      <StatusBadge status={label === "healthy" ? "healthy" : label === "offline" ? "offline" : "unknown"} />
     </article>
   );
 }

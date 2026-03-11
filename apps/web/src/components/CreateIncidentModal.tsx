@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useProjectTopics } from "@/hooks/useTopics";
 import { apiFetch } from "@/api/client";
+import { Modal } from "@/components/Modal";
 
 export function DateRangePicker({
   start,
@@ -14,8 +15,8 @@ export function DateRangePicker({
   onEnd: (v: string) => void;
 }) {
   return (
-    <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "1fr 1fr" }}>
-      <div className="form-field" style={{ marginBottom: 0 }}>
+    <div className="form-grid-2">
+      <div className="form-field form-field--flush">
         <label htmlFor="inc-start">Window start</label>
         <input
           id="inc-start"
@@ -24,7 +25,7 @@ export function DateRangePicker({
           onChange={(e) => onStart(e.target.value)}
         />
       </div>
-      <div className="form-field" style={{ marginBottom: 0 }}>
+      <div className="form-field form-field--flush">
         <label htmlFor="inc-end">Window end</label>
         <input
           id="inc-end"
@@ -51,8 +52,6 @@ export function CreateIncidentModal({
   const [end, setEnd] = useState("");
   const [error, setError] = useState("");
 
-  if (!open) return null;
-
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!selected.length) {
@@ -71,9 +70,22 @@ export function CreateIncidentModal({
   }
 
   return (
-    <dialog open onClose={onClose}>
-      <form className="modal-card" onSubmit={submit}>
-        <h2>Create incident</h2>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="Create incident"
+      footer={
+        <>
+          <button type="button" className="btn btn--ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" form="create-incident-form" className="btn btn--primary">
+            Create incident
+          </button>
+        </>
+      }
+    >
+      <form id="create-incident-form" onSubmit={submit}>
         {error && (
           <div className="alert alert--error" role="alert">
             {error}
@@ -82,32 +94,24 @@ export function CreateIncidentModal({
         <DateRangePicker start={start} end={end} onStart={setStart} onEnd={setEnd} />
         <fieldset>
           <legend>Topic filters</legend>
-          {(topics.data ?? ["payments.settlement"]).map((t) => (
-            <label key={t} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input
-                type="checkbox"
-                checked={selected.includes(t)}
-                onChange={(e) =>
-                  setSelected((s) =>
-                    e.target.checked ? [...s, t] : s.filter((x) => x !== t),
-                  )
-                }
-              />
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-sm)" }}>
-                {t}
-              </span>
-            </label>
-          ))}
+          <div className="checkbox-list">
+            {(topics.data ?? ["payments.settlement"]).map((t) => (
+              <label key={t} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={selected.includes(t)}
+                  onChange={(e) =>
+                    setSelected((s) =>
+                      e.target.checked ? [...s, t] : s.filter((x) => x !== t),
+                    )
+                  }
+                />
+                <span className="checkbox-item__label">{t}</span>
+              </label>
+            ))}
+          </div>
         </fieldset>
-        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end", marginTop: "1.5rem" }}>
-          <button type="button" className="btn btn--ghost" onClick={onClose}>
-            Cancel
-          </button>
-          <button type="submit" className="btn btn--primary">
-            Create incident
-          </button>
-        </div>
       </form>
-    </dialog>
+    </Modal>
   );
 }

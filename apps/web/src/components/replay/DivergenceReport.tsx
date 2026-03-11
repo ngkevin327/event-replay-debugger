@@ -10,7 +10,7 @@ export function MismatchRow({
   actual: string;
 }) {
   return (
-    <tr data-mismatch={index === 0}>
+    <tr data-mismatch={index === 0 ? "true" : undefined}>
       <td>{index}</td>
       <td>{expected}</td>
       <td>{actual}</td>
@@ -28,13 +28,22 @@ export function DivergenceReport({
   actual: string;
 }) {
   return (
-    <section>
+    <section className="divergence-report">
       <h2>Divergence at index {mismatchIndex}</h2>
-      <table>
-        <tbody>
-          <MismatchRow index={mismatchIndex} expected={expected} actual={actual} />
-        </tbody>
-      </table>
+      <div className="data-table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Expected</th>
+              <th>Actual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <MismatchRow index={mismatchIndex} expected={expected} actual={actual} />
+          </tbody>
+        </table>
+      </div>
       <DivergenceDiff expected={expected} actual={actual} />
     </section>
   );

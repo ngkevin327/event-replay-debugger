@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Pagination } from "@/components/Pagination";
 import { CreateIncidentModal } from "@/components/CreateIncidentModal";
 import { PageHeader } from "@/components/PageHeader";
+import { StatusBadge } from "@/components/StatusBadge";
 import { useIncidents } from "@/api/hooks";
 import type { IncidentStatus } from "@/api/generated";
 
@@ -51,7 +52,7 @@ function DataTable({ rows }: { rows: { id: string; status: IncidentStatus }[] })
                 <Link to={`/incidents/${r.id}`}>{r.id.slice(0, 8)}…</Link>
               </td>
               <td>
-                <span className={`badge status-${r.status}`}>{r.status}</span>
+                <StatusBadge status={r.status} />
               </td>
             </tr>
           ))}
@@ -85,7 +86,7 @@ export function IncidentsPage() {
       </div>
 
       {isLoading ? (
-        <p className="empty-state">Loading incidents…</p>
+        <p className="loading-state">Loading incidents…</p>
       ) : (
         <DataTable rows={data?.incidents ?? []} />
       )}

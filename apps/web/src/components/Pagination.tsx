@@ -8,18 +8,17 @@ export function Pagination({
   onChange: (next: number) => void;
 }) {
   return (
-    <nav aria-label="Pagination">
+    <nav className="pagination" aria-label="Pagination">
       <button
         type="button"
+        className="btn btn--secondary"
         disabled={offset === 0}
         onClick={() => onChange(Math.max(0, offset - limit))}
       >
         Previous
       </button>
-      <span>
-        Page {Math.floor(offset / limit) + 1}
-      </span>
-      <button type="button" onClick={() => onChange(offset + limit)}>
+      <span className="pagination__info">Page {Math.floor(offset / limit) + 1}</span>
+      <button type="button" className="btn btn--secondary" onClick={() => onChange(offset + limit)}>
         Next
       </button>
     </nav>

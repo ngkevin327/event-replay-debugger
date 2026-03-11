@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/api/client";
 import { CoverageBar } from "@/components/CoverageBar";
+import { StatusBadge } from "@/components/StatusBadge";
 import {
   ReconstructionProgress,
   SkeletonTimeline,
@@ -34,9 +35,7 @@ export function IncidentHeader({
     <header className="incident-header">
       <h1>Incident</h1>
       <div className="incident-header__meta">
-        <span className={`badge status-${status}`} data-status={status}>
-          {status}
-        </span>
+        <StatusBadge status={status} />
         <CoverageBar percent={coverage} />
       </div>
     </header>
@@ -72,8 +71,8 @@ export default function IncidentDetail() {
   const selectedEvent: TimelineEvent | null =
     rows[activeIndex]?.type === "event" ? rows[activeIndex].event : null;
 
-  if (isLoading) return <p>Loading…</p>;
-  if (!incident) return <p>Not found</p>;
+  if (isLoading) return <p className="loading-state">Loading incident…</p>;
+  if (!incident) return <p className="loading-state">Incident not found</p>;
 
   const ready = incident.status === "ready";
 
@@ -146,8 +145,7 @@ export default function IncidentDetail() {
               )}
               <button
                 type="button"
-                className="btn btn--secondary"
-                style={{ marginTop: "1rem" }}
+                className="btn btn--secondary mt-4"
                 onClick={() => setDrawerOpen(true)}
                 onKeyDown={(e) => e.key === "Enter" && setDrawerOpen(true)}
               >
@@ -173,7 +171,7 @@ export default function IncidentDetail() {
             />
           )}
           {tab === "replay" && (
-            <section>
+            <section className="panel-stack">
               <ReplayPanel incidentId={incidentId} />
               <ReplayHistory replays={replays.data?.replays ?? []} />
             </section>

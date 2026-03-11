@@ -35,7 +35,7 @@ export function EventDrawer({
             Close
           </button>
         </div>
-        <p className="timeline-row__meta" style={{ marginBottom: "1rem" }}>
+        <p className="timeline-row__meta mb-4">
           {event.topic} · partition {event.partition} · offset {event.offset}
         </p>
         <JsonViewer data={event} />
