@@ -1,7 +1,13 @@
 # MVP gap report
 
-**Generated:** 2026-05-20 (local validation run)  
+**Generated:** 2026-05-20 (local validation run; UI regression note 2026-05-21)  
 **Release target:** `v0.1.0-mvp` ([docs/release/v0.1.0-mvp.md](release/v0.1.0-mvp.md))
+
+## UI consistency pass — MVP impact (2026-05-21)
+
+Web commits `42a69aa`–`9cf49fb` (design system, shell redesign, theme/motion, timeline/graph polish, shared Modal/StatusBadge) **did not modify** `apps/web/src/api/*`, `apps/web/src/hooks.ts`, or `AuthContext`. Re-run of `scripts/verify-local.ps1` against Replay Postgres + demo API: **all required checks pass**. Web unit tests: **5/5 pass**. UI changes are **presentation-only**; MVP gaps below are unchanged.
+
+Full analysis: [mvp-validation-run-report.md](mvp-validation-run-report.md) Section 12.
 
 ## Local run status (this session)
 
