@@ -56,3 +56,12 @@ Thumbs.db
 /scripts/merge-mvp-plan.mjs
 /scripts/gen-stages-*.mjs
 /scripts/commits-*.mjs
+/commits.txt
+/scripts/apply-commit-rewrite.ps1
+/scripts/apply-commit-rewrite.sh
+/scripts/commit-date-map.txt
+/scripts/commit-msg-map.txt
+/scripts/env-filter.sh
+/scripts/msg-filter.sh
+/scripts/rewrite-commit-history.py
+/scripts/run-filter-branch.sh
