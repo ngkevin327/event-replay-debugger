@@ -1,4 +1,4 @@
-export function BrandLogo({ size = "md" }: { size?: "sm" | "md" }) {
+export function BrandLogo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
   return (
     <div className={`brand-logo brand-logo--${size}`} aria-hidden>
       <span className="brand-logo__mark">
