@@ -185,6 +185,5 @@ Add `-v` to reset volumes.
 
 ## Related docs
 
-- [MVP gap report](mvp-gap-report.md) — acceptance matrix and known gaps
-- [Release v0.1.0-mvp](release/v0.1.0-mvp.md) — shipping checklist
+- [Release v0.1.0-mvp](release/v0.1.0-mvp.md) — shipping checklist and acceptance criteria
 - [Quickstart (product)](site/docs/quickstart.md) — agent install (Helm/K8s)
